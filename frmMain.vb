@@ -35,9 +35,9 @@ Public Class frmMain
     Private results_eightpage As Boolean
     Private results_ninepage As Boolean
     Private results_tenpage As Boolean
-    Private results_num(p_intMaxNumbOfExotics + 1) as String
-    Private results_amt(p_intMaxNumbOfExotics + 1) as String
-	Private results_type(p_intMaxNumbOfExotics + 1) as String
+    Private results_num(p_intMaxNumbOfExotics + 1) As String
+    Private results_amt(p_intMaxNumbOfExotics + 1) As String
+    Private results_type(p_intMaxNumbOfExotics + 1) As String
     Private results_num_ctr As Integer
     Private p_intExoCtr As Integer = 1 'One exotic at the time
 
@@ -169,7 +169,8 @@ Public Class frmMain
         'myCommSvr.m_ApplicationBussy = False
         '
         ''''
-        Me.myCommSvr = New CommSvr
+        'TODO: *** Make skipNewOfficialStatusEvent CommSvr parameter configurable ***
+        Me.myCommSvr = New CommSvr(True)
         Me.RaceDisplayDataset = Me.myCommSvr.Dataset
         AddHandler Me.myCommSvr.DisplayNewRace, AddressOf myCommSvr_DisplayNewRace
         AddHandler Me.myCommSvr.DisplayNewOdds, AddressOf myCommSvr_DisplayNewOdds
@@ -185,6 +186,7 @@ Public Class frmMain
         'AddHandler Me.myCommSvr.DisplayExotics, AddressOf myCommSvr_DisplayExotics
         AddHandler Me.myCommSvr.DisplayTiming, AddressOf myCommSvr_DisplayTiming
         AddHandler Me.myCommSvr.DisplayTeletimer, AddressOf myCommSvr_DisplayTeletimer
+        AddHandler Me.myCommSvr.DisplayJudgesMessage, AddressOf DisplayJudgesMessage
 
         myCommSvr.m_ApplicationBussy = False
 
@@ -222,6 +224,10 @@ Public Class frmMain
                 Me.PrepareTrackCondition(False)
             End If
         End If
+    End Sub
+
+    Private Sub DisplayJudgesMessage(ByVal jmData As JMData)
+        Debug.WriteLine(jmData.ToString())
     End Sub
 
     Private Sub rbText_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rbText.CheckedChanged
@@ -662,7 +668,7 @@ Public Class frmMain
                 '    End If
                 'End If
             Else
-                    timerOfficial.Enabled = False
+                timerOfficial.Enabled = False
             End If
 
             myCommSvr.p_blnTmrResultsBusy = False
@@ -756,14 +762,14 @@ Public Class frmMain
     Private Sub LoadExoticsByType(intRace As Integer, strFormat As String, strType As String, strBetName As String, strBetAmt As String, blnRequired As Boolean, ByRef intExoticsCount As Integer)
         Dim objRsExo As RSIData.clsResultExotic
         Dim strTempWinningList As String = ""
-        Dim shrExoCtr As short
-        Dim intNumOfPrices As integer
-        Dim strBetText As string = ""
-        Dim strTemp As string = ""
+        Dim shrExoCtr As Short
+        Dim intNumOfPrices As Integer
+        Dim strBetText As String = ""
+        Dim strTemp As String = ""
 
-        objRsExo = new RSIData.clsResultExotic()
+        objRsExo = New RSIData.clsResultExotic()
 
-        Dim shrRace As short = Cshort(intRace)
+        Dim shrRace As Short = CShort(intRace)
 
         Try
             Dim Key As String
@@ -819,7 +825,7 @@ Public Class frmMain
 
             strOrig = strOrig.Trim()
 
-            If (isDbnull(strNumFormat)) Then
+            If (IsDBNull(strNumFormat)) Then
                 strNumFormat = ""
             End If
 
@@ -861,7 +867,7 @@ Public Class frmMain
                 strRes = "-"
             End If
 
-            If (strings.Left(strRes, 5) = "00000") Then
+            If (Strings.Left(strRes, 5) = "00000") Then
                 If (Microsoft.VisualBasic.Conversion.Val(strRes) = 0) Then
                     strRes = "0"
                 End If

@@ -7,6 +7,9 @@ Imports RSIData
 
 Public Class CommSvr
 
+    Private Const STX As Char = Chr(2)
+    Private Const ETX As Char = Chr(3)
+
 #Region " Events "
     '
     Public Delegate Sub CommEventMessage(ByVal strMessage As String)
@@ -38,6 +41,7 @@ Public Class CommSvr
     Private p_blnWINPool As Boolean = True
     Private p_blnPlacePool As Boolean = True
     Private p_blnShowPool As Boolean = True
+    Private p_blnSkipNewOfficialStatusEvent As Boolean = True
 
     Public objResultFN(p_intMaxNumbOfRaces + 1) As clsFinisherData
     Private objResultWin(p_intMaxNumbOfRaces + 1) As clsResultWPS
@@ -72,6 +76,7 @@ Public Class CommSvr
     Public Event DisplayMessages()
     Public Event DisplayTiming()
     'Public Event DisplayExotics()
+    Public Event DisplayJudgesMessage(ByVal jmData As JMData)
 
     Public myNumberExacta As Integer
     Public myNumberTrifecta As Integer
@@ -134,7 +139,8 @@ Public Class CommSvr
 
 #Region " Constructor "
 
-    Public Sub New()
+    Public Sub New(skipNewOfficialStatusEvent As Boolean)
+        p_blnSkipNewOfficialStatusEvent = skipNewOfficialStatusEvent
         Try
             For intRaceNum As Integer = 1 To p_intMaxNumbOfRaces
                 For intCtrFor As Integer = 1 To p_intMaxFinisherPositions
@@ -205,11 +211,93 @@ Public Class CommSvr
     Private Sub oCommServer_Message(ByRef strMessage As String) Handles oCommServer.Message
         Try
             Me.myCurrentMessage = strMessage
+            If IsJudgeMessage(strMessage) Then
+                ProcessJudgesMessage(strMessage)
+            End If
             'RaiseEvent DisplayMessages()
         Catch
             'nothing
         End Try
     End Sub
+
+    Private Sub ProcessJudgesMessage(message As String)
+        Dim data As JMData = ProcessJM(message)
+
+        RaiseEvent DisplayJudgesMessage(data)
+    End Sub
+
+    Private Function ProcessJM(ByVal message As String) As JMData
+        Dim strTemp As String
+        Dim intInfoPointer As Integer
+        Dim intCounter As Integer
+        Dim data As JMData
+
+        On Error GoTo ErrHndlr
+
+        '"JMS00S SARATOGA SUMMER          0159RACE090090OFFCOBCINCPHCDE"
+
+        message = message.TrimStart(STX).TrimEnd(ETX)
+        data = New JMData()
+
+        data.TrackMeetID = Mid(message, 47, 3)
+
+        data.RaceNumber = Mid(message, 58, 2)
+
+        intInfoPointer = 66
+
+        strTemp = Mid(message, intInfoPointer, 3)
+        data.Official = UCase(strTemp) = "OFF"
+        intInfoPointer = intInfoPointer + 3
+
+        strTemp = Mid(message, intInfoPointer, 3)
+        data.Objection = UCase(strTemp) = "OBJ"
+        intInfoPointer = intInfoPointer + 3
+
+        data.SetObjectionRunners(Mid(message, intInfoPointer, 15))
+        intInfoPointer = intInfoPointer + 15
+
+
+        strTemp = Mid(message, intInfoPointer, 3)
+        data.Inquiry = UCase(strTemp) = "INQ"
+        intInfoPointer = intInfoPointer + 3
+
+        data.SetInquiryRunners(Mid(message, intInfoPointer, 15))
+        intInfoPointer = intInfoPointer + 15
+
+        strTemp = Mid(message, intInfoPointer, 3)
+        data.Photo = UCase(strTemp) = "PHT"
+        intInfoPointer = intInfoPointer + 3
+
+        strTemp = Mid(message, intInfoPointer, 3)
+        data.Deaheat = UCase(strTemp) = "DEA"
+        intInfoPointer = intInfoPointer + 3
+
+        Dim NumbDH As Integer = CInt(Mid(message, intInfoPointer, 1))
+        intInfoPointer = intInfoPointer + 1
+        data.DeaheatRunners = New String(4) {}
+        If (NumbDH > 0) Then
+            For intCounter = 1 To NumbDH
+                data.DeaheatRunners(intCounter - 1) = Mid(message, intInfoPointer, 4)
+                intInfoPointer = intInfoPointer + 4
+            Next intCounter
+        End If
+
+        ProcessJM = data
+
+        Exit Function
+
+ErrHndlr:
+        'Implement error logging
+    End Function
+
+
+    Private Function IsJudgeMessage(message As String) As Boolean
+
+        Dim msgType As String = UCase(Mid(message, 11, 2))
+        Return msgType = "JM"
+
+    End Function
+
 
     Private Sub oCommServer_RaceHeaderChange(ByRef CurrentMTP As String, ByRef CurrentTime As String, ByRef CurrentPostTime As String, ByRef CurrentRace As Short) Handles oCommServer.RaceHeaderChange
         Dim Race As Integer = Convert.ToInt32(CurrentRace)
@@ -312,6 +400,11 @@ Public Class CommSvr
     End Sub
 
     Private Sub oCommServer_NewOfficialStatus(ByRef blnOfficialStatus As Boolean, ByRef blnObjStatus As Boolean, ByRef blnInqStatus As Boolean, ByRef blnPhotoStatus As Boolean, ByRef blnDHStatus As Boolean, ByRef intRace As Short) Handles oCommServer.NewOfficialStatus
+
+        If p_blnSkipNewOfficialStatusEvent Then
+            Exit Sub
+        End If
+
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
             If m_ApplicationBussy Then
@@ -596,6 +689,10 @@ Public Class CommSvr
             '
         End Try
         RaiseEvent DisplayRaceStatusJM()
+    End Sub
+
+    Private Sub UpdateStatusJM(ByVal jmData As JMData)
+
     End Sub
 
     Private Function GetRunnerListWithIndicator(ByVal Indicator As String, ByVal strList As String, ByVal NumberOfRows As Integer, ByVal intLen As Integer) As String
