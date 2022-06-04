@@ -4322,7 +4322,7 @@ Partial Class frmMain
         Me.chkInqObj.Size = New System.Drawing.Size(83, 21)
         Me.chkInqObj.TabIndex = 79
         Me.chkInqObj.TabStop = False
-        Me.chkInqObj.Tag = "Inq/Obj*"
+        Me.chkInqObj.Tag = "INQUIRY/OBJECTION*"
         Me.chkInqObj.Text = "Inq / Obj"
         Me.chkInqObj.UseVisualStyleBackColor = True
         '
@@ -4336,7 +4336,7 @@ Partial Class frmMain
         Me.chkDeadHeat.Size = New System.Drawing.Size(98, 21)
         Me.chkDeadHeat.TabIndex = 76
         Me.chkDeadHeat.TabStop = False
-        Me.chkDeadHeat.Tag = "DH"
+        Me.chkDeadHeat.Tag = "DEADHEAT"
         Me.chkDeadHeat.Text = "Dead Heat"
         Me.chkDeadHeat.UseVisualStyleBackColor = True
         '
@@ -4376,7 +4376,7 @@ Partial Class frmMain
         Me.chkObj.Name = "chkObj"
         Me.chkObj.Size = New System.Drawing.Size(90, 21)
         Me.chkObj.TabIndex = 1
-        Me.chkObj.Tag = "Obj*"
+        Me.chkObj.Tag = "OBJECTION*"
         Me.chkObj.Text = "Objection"
         Me.chkObj.UseVisualStyleBackColor = True
         '
@@ -4389,7 +4389,7 @@ Partial Class frmMain
         Me.chkInq.Name = "chkInq"
         Me.chkInq.Size = New System.Drawing.Size(72, 21)
         Me.chkInq.TabIndex = 0
-        Me.chkInq.Tag = "Inquiry*"
+        Me.chkInq.Tag = "INQUIRY*"
         Me.chkInq.Text = "Inquiry"
         Me.chkInq.UseVisualStyleBackColor = True
         '

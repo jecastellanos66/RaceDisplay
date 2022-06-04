@@ -9,6 +9,7 @@
     Private _objectionRunners() As String = New String(4) {}
     Private _inqueryRunners() As String = New String(4) {}
     Private _deadheatRunners() As String = New String(4) {}
+    Private _photoRunners() As String = New String(4) {}
 
     Public Property TrackMeetID() As String
         Get
@@ -111,6 +112,19 @@
     Public Sub SetDeadheatRunners(ByVal runners As String)
         _deadheatRunners = ExtractRunners(runners)
     End Sub
+
+    Public Sub SetPhotoRunners(ByVal runners As String)
+        _photoRunners = ExtractRunners(runners)
+    End Sub
+
+    Public ReadOnly Property FlashingRunnersPresent() As Boolean
+        Get
+            Return _objectionRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) _
+                Or _inqueryRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) _
+                Or _deadheatRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) _
+                Or _photoRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh))
+        End Get
+    End Property
 
     Private Function ExtractRunners(ByVal runners As String) As String()
         Dim runnerData() As String = New String(4) {}

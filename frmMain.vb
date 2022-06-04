@@ -226,10 +226,6 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub DisplayJudgesMessage(ByVal jmData As JMData)
-        Debug.WriteLine(jmData.ToString())
-    End Sub
-
     Private Sub rbText_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rbText.CheckedChanged
         If (Me.Visible) Then
             If sender.Checked Then
@@ -5368,8 +5364,86 @@ Public Class frmMain
         ''
     End Sub
 
-    Private Delegate Sub ResetRaceStatusJMBindingSource()
+    Private Delegate Sub JMDisplayBindingSource(ByVal jmData As JMData)
+    Private Sub DisplayJudgesMessage(ByVal jmData As JMData)
+        Debug.WriteLine(jmData.ToString())
+        If Me.InvokeRequired Then
+            Me.Invoke(New JMDisplayBindingSource(AddressOf DisplayJudgesMessage), jmData)
+        Else
+            '
+        End If
 
+        Dim strRunnersFlashingStatus As String = ""
+
+        Try
+            p_blnUpdateManually = False
+            For Each ctl As Control In Me.gbOrder.Controls
+                If TypeOf ctl Is Windows.Forms.CheckBox Then
+                    CType(ctl, Windows.Forms.CheckBox).Checked = False
+                End If
+            Next
+            p_blnUpdateManually = True
+        Catch ex As Exception
+            p_blnUpdateManually = True
+        End Try
+
+        Try
+            If (jmData.FlashingRunnersPresent) Then
+                Try
+                    p_blnUpdateManually = False
+
+                    Dim vntInfoArray() As String = Split(strRunnersFlashingStatus, ",")
+                    Dim strTemp As String = ""
+                    For i As Integer = 0 To vntInfoArray.Length - 1
+                        strTemp = vntInfoArray(i).Trim.ToUpper()
+                        If (strTemp = (Me.txtRunning1.Text & Me.txtRunning1A.Text).Trim.ToUpper()) Then
+                            Me.chkResults1.Checked = True
+                        ElseIf (strTemp = (Me.txtRunning2.Text & Me.txtRunning2A.Text).Trim.ToUpper()) Then
+                            Me.chkResults2.Checked = True
+                        ElseIf (strTemp = (Me.txtRunning3.Text & Me.txtRunning3A.Text).Trim.ToUpper()) Then
+                            Me.chkResults3.Checked = True
+                        ElseIf (strTemp = (Me.txtRunning4.Text & Me.txtRunning4A.Text).Trim.ToUpper()) Then
+                            Me.chkResults4.Checked = True
+                        End If
+                    Next
+
+                    p_blnUpdateManually = True
+                Catch ex As Exception
+                    p_blnUpdateManually = True
+                End Try
+            End If
+
+            Me.PrepareRunningOrderDataToSend()
+
+            Me.chkOfficial.Checked = jmData.Official
+            Me.chkDeadHeat.Checked = jmData.Deaheat
+            Me.chkPhoto.Checked = jmData.Photo
+            Me.chkInqObj.Checked = jmData.Inquiry And jmData.Objection
+            Me.chkInq.Checked = jmData.Inquiry
+            Me.chkObj.Checked = jmData.Objection
+
+            If (Not (jmData.Official And jmData.Deaheat And jmData.Photo And jmData.Objection And jmData.Inquiry)) Then
+                Try
+                    m_FlagChangeEvent = False
+                    ClearStatus("")
+                    m_FlagChangeEvent = True
+                Catch ex As Exception
+                    m_FlagChangeEvent = True
+                End Try
+                txtOfficial.Text = ""
+                Me.PrepareStatusDataToSend()
+                If (txtRaceStatus.Text.Trim = "HOLD ALL TICKETS") Then
+                    txtRaceStatus.Text = ""
+                    Me.PrepareExoticsToSend(1, False, True)
+                End If
+            End If
+
+        Catch ex As Exception
+            '
+        End Try
+    End Sub
+
+    Private Delegate Sub ResetRaceStatusJMBindingSource()
     Private Sub myCommSvr_DisplayRaceStatusJM()
         If Me.InvokeRequired Then
             Me.Invoke(New ResetRaceStatusJMBindingSource(AddressOf myCommSvr_DisplayRaceStatusJM))
@@ -6409,10 +6483,12 @@ Public Class frmMain
             Try
                 If (m_FlagChangeEvent) Then
                     If sender.Checked Then
+                        Dim holdAllTickes As Boolean = (InStr(sender.Tag, "*") > 0)
+                        Dim officialText = UCase(Replace(sender.Tag, "*", ""))
                         m_FlagChangeEvent = False
                         ClearStatus(sender.Name)
                         m_FlagChangeEvent = True
-                        If (InStr(sender.Tag, "*") > 0) Then
+                        If holdAllTickes Then
                             txtRaceStatus.Text = "HOLD ALL TICKETS"
                             Me.PrepareExoticsToSend(1, False, False)
                         Else
@@ -6421,7 +6497,7 @@ Public Class frmMain
                                 Me.PrepareExoticsToSend(1, False, True)
                             End If
                         End If
-                        txtOfficial.Text = UCase(Replace(sender.Tag, "*", ""))
+                        txtOfficial.Text = officialText
                         Me.PrepareStatusDataToSend()
                     Else
                         If (txtRaceStatus.Text.Trim = "HOLD ALL TICKETS") Then

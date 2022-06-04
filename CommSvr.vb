@@ -222,7 +222,6 @@ Public Class CommSvr
 
     Private Sub ProcessJudgesMessage(message As String)
         Dim data As JMData = ProcessJM(message)
-
         RaiseEvent DisplayJudgesMessage(data)
     End Sub
 
@@ -289,7 +288,6 @@ Public Class CommSvr
 ErrHndlr:
         'Implement error logging
     End Function
-
 
     Private Function IsJudgeMessage(message As String) As Boolean
 
