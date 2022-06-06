@@ -126,6 +126,24 @@
         End Get
     End Property
 
+    'Get list of the firs status runners it finds in the order in code
+    Public Function GetStatusRuners() As String()
+        Dim statusRunners() As String = Nothing
+
+        If _objectionRunners.Length > 0 Then
+            statusRunners = _objectionRunners
+        ElseIf _inqueryRunners.Length > 0 Then
+            statusRunners = _inqueryRunners
+        ElseIf _deadheatRunners.Length > 0 Then
+            statusRunners = _deadheatRunners
+        ElseIf _photoRunners.Length > 0 Then
+            statusRunners = _photoRunners
+        End If
+
+        Return statusRunners
+    End Function
+
+
     Private Function ExtractRunners(ByVal runners As String) As String()
         Dim runnerData() As String = New String(4) {}
 

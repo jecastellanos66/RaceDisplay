@@ -3060,6 +3060,7 @@ Public Class frmMain
 
         Dim Flash9to16 As String = "00"
         Dim Flash1to8 As String = "00"
+        Dim intFlash1to8 As Integer = 0
 
         'H segment 16-9 hhhhhhhh
         'H segment  8-1 hhhhhhhh
@@ -3068,32 +3069,42 @@ Public Class frmMain
         Dim intHsegment1to8_1 As Integer = 0
         Dim Hsegment1to8_1 As String = "00"
         '
+
         Dim ro1 As String = PrepareHexData(Me.txtRunning1.Text.Trim)
         Dim ro1a As String = PrepareHexData(Me.txtRunning1A.Text.Trim)
         If Me.chkResults1.Checked Then
             'ro1 is in segment 1, 00000001 or 1d
-            intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 1)
+            'intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 1)
+
+            intFlash1to8 += 3 '3 = first (1) and second (2) digits
+
         End If
         '
         Dim ro2 As String = PrepareHexData(Me.txtRunning2.Text.Trim)
         Dim ro2a As String = PrepareHexData(Me.txtRunning2A.Text.Trim)
         If Me.chkResults2.Checked Then
             'ro2 is in segment 3, 00000100 or 4d
-            intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 3)
+            'intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 3)
+
+            intFlash1to8 += 12 '12 = third (4) and fourth (8) digits
         End If
         '        
         Dim ro3 As String = PrepareHexData(Me.txtRunning3.Text.Trim)
         Dim ro3a As String = PrepareHexData(Me.txtRunning3A.Text.Trim)
         If Me.chkResults3.Checked Then
             'ro3 is in segment 5, 00010000 or 16d
-            intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 5)
+            'intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 5)
+
+            intFlash1to8 += 48 '48 = fifth (16) and sixth (32) digits
         End If
-        '
+        'n
         Dim ro4 As String = PrepareHexData(Me.txtRunning4.Text.Trim)
         Dim ro4a As String = PrepareHexData(Me.txtRunning4A.Text.Trim)
         If Me.chkResults4.Checked Then
             'ro4 is in segment 7, 01000000 or 64d
-            intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 7)
+            'intHsegment1to8_1 = intHsegment1to8_1 + Me.intSegmentHexPositionCollection("K" & 7)
+
+            intFlash1to8 += 172 '172 = seventh (64) and eighth (128) digits
         End If
         '
         Try
@@ -3101,6 +3112,8 @@ Public Class frmMain
             strPort = strPort.Substring(strPort.Length - 2)
 
             Hsegment1to8_1 = ("0" & Hex(intHsegment1to8_1))
+
+            Flash1to8 = ("0" & Hex(intFlash1to8))
 
             myDataToSend = String.Format("{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}0000000000000000{18}0000",
                                                  SOH, strPort, BoardControl, BoardDimming, PayloadType,
@@ -5390,24 +5403,23 @@ Public Class frmMain
         Try
             If (jmData.FlashingRunnersPresent) Then
                 Try
-                    p_blnUpdateManually = False
+                    Dim flashingRunners() As String = jmData.GetStatusRuners()
 
-                    Dim vntInfoArray() As String = Split(strRunnersFlashingStatus, ",")
-                    Dim strTemp As String = ""
-                    For i As Integer = 0 To vntInfoArray.Length - 1
-                        strTemp = vntInfoArray(i).Trim.ToUpper()
-                        If (strTemp = (Me.txtRunning1.Text & Me.txtRunning1A.Text).Trim.ToUpper()) Then
-                            Me.chkResults1.Checked = True
-                        ElseIf (strTemp = (Me.txtRunning2.Text & Me.txtRunning2A.Text).Trim.ToUpper()) Then
-                            Me.chkResults2.Checked = True
-                        ElseIf (strTemp = (Me.txtRunning3.Text & Me.txtRunning3A.Text).Trim.ToUpper()) Then
-                            Me.chkResults3.Checked = True
-                        ElseIf (strTemp = (Me.txtRunning4.Text & Me.txtRunning4A.Text).Trim.ToUpper()) Then
-                            Me.chkResults4.Checked = True
-                        End If
-                    Next
-
-                    p_blnUpdateManually = True
+                    If Not flashingRunners Is Nothing Then
+                        Dim strTemp As String = ""
+                        For i As Integer = 0 To flashingRunners.Length - 1
+                            strTemp = flashingRunners(i).Trim.ToUpper()
+                            If (strTemp = (Me.txtRunning1.Text & Me.txtRunning1A.Text).Trim.ToUpper()) Then
+                                Me.chkResults1.Checked = True
+                            ElseIf (strTemp = (Me.txtRunning2.Text & Me.txtRunning2A.Text).Trim.ToUpper()) Then
+                                Me.chkResults2.Checked = True
+                            ElseIf (strTemp = (Me.txtRunning3.Text & Me.txtRunning3A.Text).Trim.ToUpper()) Then
+                                Me.chkResults3.Checked = True
+                            ElseIf (strTemp = (Me.txtRunning4.Text & Me.txtRunning4A.Text).Trim.ToUpper()) Then
+                                Me.chkResults4.Checked = True
+                            End If
+                        Next
+                    End If
                 Catch ex As Exception
                     p_blnUpdateManually = True
                 End Try
@@ -5422,7 +5434,7 @@ Public Class frmMain
             Me.chkInq.Checked = jmData.Inquiry
             Me.chkObj.Checked = jmData.Objection
 
-            If (Not (jmData.Official And jmData.Deaheat And jmData.Photo And jmData.Objection And jmData.Inquiry)) Then
+            If (Not (jmData.Official Or jmData.Deaheat Or jmData.Photo Or jmData.Objection Or jmData.Inquiry)) Then
                 Try
                     m_FlagChangeEvent = False
                     ClearStatus("")

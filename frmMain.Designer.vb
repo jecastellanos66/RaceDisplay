@@ -31,6 +31,8 @@ Partial Class frmMain
         Me.lbl15 = New System.Windows.Forms.Label()
         Me.Label21 = New System.Windows.Forms.Label()
         Me.txtOdds14 = New System.Windows.Forms.TextBox()
+        Me.bsODDS = New System.Windows.Forms.BindingSource(Me.components)
+        Me.RaceDisplayDataset = New RSI_Toteboard.RaceDisplayDataset()
         Me.txtOdds14A = New System.Windows.Forms.TextBox()
         Me.Label22 = New System.Windows.Forms.Label()
         Me.txtOdds13 = New System.Windows.Forms.TextBox()
@@ -95,6 +97,7 @@ Partial Class frmMain
         Me.chkResults2 = New System.Windows.Forms.CheckBox()
         Me.chkResults1 = New System.Windows.Forms.CheckBox()
         Me.txtRunning3 = New System.Windows.Forms.TextBox()
+        Me.bsRunningOrder = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtRunning3A = New System.Windows.Forms.TextBox()
         Me.txtRunning4 = New System.Windows.Forms.TextBox()
         Me.txtRunning4A = New System.Windows.Forms.TextBox()
@@ -108,6 +111,7 @@ Partial Class frmMain
         Me.Label94 = New System.Windows.Forms.Label()
         Me.gbWin = New System.Windows.Forms.GroupBox()
         Me.txtWin2F = New System.Windows.Forms.TextBox()
+        Me.bsWin = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtWin1F = New System.Windows.Forms.TextBox()
         Me.Label52 = New System.Windows.Forms.Label()
         Me.txtWin2E = New System.Windows.Forms.TextBox()
@@ -124,6 +128,7 @@ Partial Class frmMain
         Me.gbPlace = New System.Windows.Forms.GroupBox()
         Me.Label67 = New System.Windows.Forms.Label()
         Me.txtPlace3E = New System.Windows.Forms.TextBox()
+        Me.bsPlace = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtPlace3C = New System.Windows.Forms.TextBox()
         Me.txtPlace3D = New System.Windows.Forms.TextBox()
         Me.txtPlace3A = New System.Windows.Forms.TextBox()
@@ -143,6 +148,7 @@ Partial Class frmMain
         Me.gbShow = New System.Windows.Forms.GroupBox()
         Me.Label33 = New System.Windows.Forms.Label()
         Me.txtShow4E = New System.Windows.Forms.TextBox()
+        Me.bsShow = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtShow4C = New System.Windows.Forms.TextBox()
         Me.txtShow4D = New System.Windows.Forms.TextBox()
         Me.txtShow4A = New System.Windows.Forms.TextBox()
@@ -168,6 +174,7 @@ Partial Class frmMain
         Me.lblSHOW = New System.Windows.Forms.Label()
         Me.gbDD = New System.Windows.Forms.GroupBox()
         Me.txtDDAmountF = New System.Windows.Forms.TextBox()
+        Me.bsDD = New System.Windows.Forms.BindingSource(Me.components)
         Me.Label16 = New System.Windows.Forms.Label()
         Me.txtDDAmountA = New System.Windows.Forms.TextBox()
         Me.txtDD2A = New System.Windows.Forms.TextBox()
@@ -182,6 +189,7 @@ Partial Class frmMain
         Me.txtDDAmountC = New System.Windows.Forms.TextBox()
         Me.gbPerfecta = New System.Windows.Forms.GroupBox()
         Me.txtPerfectaAmountG = New System.Windows.Forms.TextBox()
+        Me.bsPerfecta = New System.Windows.Forms.BindingSource(Me.components)
         Me.Label13 = New System.Windows.Forms.Label()
         Me.txtPerfectaAmountA = New System.Windows.Forms.TextBox()
         Me.txtPerfecta2A = New System.Windows.Forms.TextBox()
@@ -196,6 +204,7 @@ Partial Class frmMain
         Me.txtPerfectaAmountC = New System.Windows.Forms.TextBox()
         Me.gbBet3 = New System.Windows.Forms.GroupBox()
         Me.txtBetAmountG = New System.Windows.Forms.TextBox()
+        Me.bsBet3 = New System.Windows.Forms.BindingSource(Me.components)
         Me.Label14 = New System.Windows.Forms.Label()
         Me.txtBet3B = New System.Windows.Forms.TextBox()
         Me.txtBet3A = New System.Windows.Forms.TextBox()
@@ -212,6 +221,7 @@ Partial Class frmMain
         Me.txtBetAmountC = New System.Windows.Forms.TextBox()
         Me.gbTrifecta = New System.Windows.Forms.GroupBox()
         Me.txtTrifectaAmountG = New System.Windows.Forms.TextBox()
+        Me.bsTrifecta = New System.Windows.Forms.BindingSource(Me.components)
         Me.Label15 = New System.Windows.Forms.Label()
         Me.txtTrifecta3B = New System.Windows.Forms.TextBox()
         Me.txtTrifecta3A = New System.Windows.Forms.TextBox()
@@ -238,20 +248,24 @@ Partial Class frmMain
         Me.lblRace = New System.Windows.Forms.Label()
         Me.gbPostTime = New System.Windows.Forms.GroupBox()
         Me.txtPostTimed = New System.Windows.Forms.TextBox()
+        Me.bsPostTime = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtPostTimec = New System.Windows.Forms.TextBox()
         Me.txtPostTimeb = New System.Windows.Forms.TextBox()
         Me.txtPostTimea = New System.Windows.Forms.TextBox()
         Me.gbTime = New System.Windows.Forms.GroupBox()
         Me.Label73 = New System.Windows.Forms.Label()
         Me.txtTODD = New System.Windows.Forms.TextBox()
+        Me.bsTOD = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtTODC = New System.Windows.Forms.TextBox()
         Me.txtTODB = New System.Windows.Forms.TextBox()
         Me.txtTODA = New System.Windows.Forms.TextBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.txtRaceB = New System.Windows.Forms.TextBox()
+        Me.bsRace = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtRaceA = New System.Windows.Forms.TextBox()
         Me.gbMTP = New System.Windows.Forms.GroupBox()
         Me.txtMTPB = New System.Windows.Forms.TextBox()
+        Me.bsMTP = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtMTPA = New System.Windows.Forms.TextBox()
         Me.tmrTest = New System.Windows.Forms.Timer(Me.components)
         Me.tmrWPSPools = New System.Windows.Forms.Timer(Me.components)
@@ -298,6 +312,7 @@ Partial Class frmMain
         Me.Label28 = New System.Windows.Forms.Label()
         Me.Label40 = New System.Windows.Forms.Label()
         Me.txt12e = New System.Windows.Forms.TextBox()
+        Me.bsTiming12 = New System.Windows.Forms.BindingSource(Me.components)
         Me.txt12c = New System.Windows.Forms.TextBox()
         Me.txt12d = New System.Windows.Forms.TextBox()
         Me.txt12a = New System.Windows.Forms.TextBox()
@@ -305,6 +320,7 @@ Partial Class frmMain
         Me.Label17 = New System.Windows.Forms.Label()
         Me.Label26 = New System.Windows.Forms.Label()
         Me.txtMilee = New System.Windows.Forms.TextBox()
+        Me.bsTimingMile = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtMilec = New System.Windows.Forms.TextBox()
         Me.txtMiled = New System.Windows.Forms.TextBox()
         Me.txtMilea = New System.Windows.Forms.TextBox()
@@ -314,18 +330,21 @@ Partial Class frmMain
         Me.Label31 = New System.Windows.Forms.Label()
         Me.Label30 = New System.Windows.Forms.Label()
         Me.txt14e = New System.Windows.Forms.TextBox()
+        Me.bsTiming14 = New System.Windows.Forms.BindingSource(Me.components)
         Me.txt14c = New System.Windows.Forms.TextBox()
         Me.txt14d = New System.Windows.Forms.TextBox()
         Me.txt14a = New System.Windows.Forms.TextBox()
         Me.txt14b = New System.Windows.Forms.TextBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.txt34e = New System.Windows.Forms.TextBox()
+        Me.bsTiming34 = New System.Windows.Forms.BindingSource(Me.components)
         Me.txt34c = New System.Windows.Forms.TextBox()
         Me.txt34d = New System.Windows.Forms.TextBox()
         Me.txt34a = New System.Windows.Forms.TextBox()
         Me.txt34b = New System.Windows.Forms.TextBox()
         Me.Label20 = New System.Windows.Forms.Label()
         Me.txtFinishe = New System.Windows.Forms.TextBox()
+        Me.bsTimingFinish = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtFinishc = New System.Windows.Forms.TextBox()
         Me.txtFinishd = New System.Windows.Forms.TextBox()
         Me.txtFinisha = New System.Windows.Forms.TextBox()
@@ -371,6 +390,7 @@ Partial Class frmMain
         Me.txtRaceNumber = New System.Windows.Forms.TextBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.txtPoolTotB = New System.Windows.Forms.TextBox()
+        Me.bsWPSPools = New System.Windows.Forms.BindingSource(Me.components)
         Me.txtPoolTotA = New System.Windows.Forms.TextBox()
         Me.txtPoolTotD = New System.Windows.Forms.TextBox()
         Me.txtPoolTotC = New System.Windows.Forms.TextBox()
@@ -452,40 +472,34 @@ Partial Class frmMain
         Me.lblPools = New System.Windows.Forms.Label()
         Me.txtPoolType = New System.Windows.Forms.TextBox()
         Me.gbWPSPools = New System.Windows.Forms.GroupBox()
-        Me.bsTiming12 = New System.Windows.Forms.BindingSource(Me.components)
-        Me.RaceDisplayDataset = New RSI_Toteboard.RaceDisplayDataset()
-        Me.bsTimingMile = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsTiming14 = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsTiming34 = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsTimingFinish = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsTOD = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsRace = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsPostTime = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsMTP = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsBet3 = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsDD = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsShow = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsPlace = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsWin = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsRunningOrder = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsODDS = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsTrifecta = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsPerfecta = New System.Windows.Forms.BindingSource(Me.components)
-        Me.bsWPSPools = New System.Windows.Forms.BindingSource(Me.components)
         Me.bsStatus = New System.Windows.Forms.BindingSource(Me.components)
         Me.gbOdds.SuspendLayout()
+        CType(Me.bsODDS, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.RaceDisplayDataset, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbOrder.SuspendLayout()
+        CType(Me.bsRunningOrder, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbWin.SuspendLayout()
+        CType(Me.bsWin, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbPlace.SuspendLayout()
+        CType(Me.bsPlace, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbShow.SuspendLayout()
+        CType(Me.bsShow, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbDD.SuspendLayout()
+        CType(Me.bsDD, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbPerfecta.SuspendLayout()
+        CType(Me.bsPerfecta, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbBet3.SuspendLayout()
+        CType(Me.bsBet3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbTrifecta.SuspendLayout()
+        CType(Me.bsTrifecta, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbPostTime.SuspendLayout()
+        CType(Me.bsPostTime, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbTime.SuspendLayout()
+        CType(Me.bsTOD, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox1.SuspendLayout()
+        CType(Me.bsRace, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gbMTP.SuspendLayout()
+        CType(Me.bsMTP, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox9.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.fraMTPToClearRS.SuspendLayout()
@@ -493,28 +507,14 @@ Partial Class frmMain
         Me.gbTrack.SuspendLayout()
         Me.gbOptions.SuspendLayout()
         Me.gbTiming.SuspendLayout()
-        Me.msMain.SuspendLayout()
-        Me.gbWPSPools.SuspendLayout()
         CType(Me.bsTiming12, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.RaceDisplayDataset, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.bsTimingMile, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.bsTiming14, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.bsTiming34, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.bsTimingFinish, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsTOD, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsRace, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsPostTime, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsMTP, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsBet3, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsDD, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsShow, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsPlace, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsWin, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsRunningOrder, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsODDS, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsTrifecta, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.bsPerfecta, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.msMain.SuspendLayout()
         CType(Me.bsWPSPools, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.gbWPSPools.SuspendLayout()
         CType(Me.bsStatus, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -669,6 +669,16 @@ Partial Class frmMain
         Me.txtOdds14.TabStop = False
         Me.txtOdds14.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         Me.txtOdds14.Visible = False
+        '
+        'bsODDS
+        '
+        Me.bsODDS.DataMember = "ODDS"
+        Me.bsODDS.DataSource = Me.RaceDisplayDataset
+        '
+        'RaceDisplayDataset
+        '
+        Me.RaceDisplayDataset.DataSetName = "RaceDisplayDataset"
+        Me.RaceDisplayDataset.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema
         '
         'txtOdds14A
         '
@@ -1564,6 +1574,11 @@ Partial Class frmMain
         Me.txtRunning3.TabStop = False
         Me.txtRunning3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsRunningOrder
+        '
+        Me.bsRunningOrder.DataMember = "RUNNINGORDER"
+        Me.bsRunningOrder.DataSource = Me.RaceDisplayDataset
+        '
         'txtRunning3A
         '
         Me.txtRunning3A.BackColor = System.Drawing.SystemColors.ControlText
@@ -1760,6 +1775,11 @@ Partial Class frmMain
         Me.txtWin2F.TabIndex = 78
         Me.txtWin2F.TabStop = False
         Me.txtWin2F.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsWin
+        '
+        Me.bsWin.DataMember = "WIN"
+        Me.bsWin.DataSource = Me.RaceDisplayDataset
         '
         'txtWin1F
         '
@@ -2005,6 +2025,11 @@ Partial Class frmMain
         Me.txtPlace3E.TabIndex = 68
         Me.txtPlace3E.TabStop = False
         Me.txtPlace3E.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsPlace
+        '
+        Me.bsPlace.DataMember = "PLACE"
+        Me.bsPlace.DataSource = Me.RaceDisplayDataset
         '
         'txtPlace3C
         '
@@ -2301,6 +2326,11 @@ Partial Class frmMain
         Me.txtShow4E.TabIndex = 74
         Me.txtShow4E.TabStop = False
         Me.txtShow4E.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsShow
+        '
+        Me.bsShow.DataMember = "SHOW"
+        Me.bsShow.DataSource = Me.RaceDisplayDataset
         '
         'txtShow4C
         '
@@ -2675,6 +2705,11 @@ Partial Class frmMain
         Me.txtDDAmountF.TabIndex = 66
         Me.txtDDAmountF.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsDD
+        '
+        Me.bsDD.DataMember = "DAILYDOUBLE"
+        Me.bsDD.DataSource = Me.RaceDisplayDataset
+        '
         'Label16
         '
         Me.Label16.AutoSize = True
@@ -2875,6 +2910,11 @@ Partial Class frmMain
         Me.txtPerfectaAmountG.TabIndex = 65
         Me.txtPerfectaAmountG.TabStop = False
         Me.txtPerfectaAmountG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsPerfecta
+        '
+        Me.bsPerfecta.DataMember = "PERFECTA"
+        Me.bsPerfecta.DataSource = Me.RaceDisplayDataset
         '
         'Label13
         '
@@ -3090,6 +3130,11 @@ Partial Class frmMain
         Me.txtBetAmountG.Size = New System.Drawing.Size(41, 34)
         Me.txtBetAmountG.TabIndex = 67
         Me.txtBetAmountG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsBet3
+        '
+        Me.bsBet3.DataMember = "BET3"
+        Me.bsBet3.DataSource = Me.RaceDisplayDataset
         '
         'Label14
         '
@@ -3323,6 +3368,11 @@ Partial Class frmMain
         Me.txtTrifectaAmountG.TabStop = False
         Me.txtTrifectaAmountG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsTrifecta
+        '
+        Me.bsTrifecta.DataMember = "TRIFECTA"
+        Me.bsTrifecta.DataSource = Me.RaceDisplayDataset
+        '
         'Label15
         '
         Me.Label15.AutoSize = True
@@ -3529,7 +3579,7 @@ Partial Class frmMain
         'CloseToolStripMenuItem
         '
         Me.CloseToolStripMenuItem.Name = "CloseToolStripMenuItem"
-        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(108, 26)
+        Me.CloseToolStripMenuItem.Size = New System.Drawing.Size(116, 26)
         Me.CloseToolStripMenuItem.Text = "&Exit"
         '
         'ClearOfficialToolStripMenuItem
@@ -3550,7 +3600,7 @@ Partial Class frmMain
         Me.lblPortInUse.Location = New System.Drawing.Point(1617, 1034)
         Me.lblPortInUse.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblPortInUse.Name = "lblPortInUse"
-        Me.lblPortInUse.Size = New System.Drawing.Size(59, 17)
+        Me.lblPortInUse.Size = New System.Drawing.Size(55, 16)
         Me.lblPortInUse.TabIndex = 16
         Me.lblPortInUse.Text = "Label17"
         Me.lblPortInUse.Visible = False
@@ -3565,7 +3615,7 @@ Partial Class frmMain
         Me.rbExacta.Location = New System.Drawing.Point(25, 976)
         Me.rbExacta.Margin = New System.Windows.Forms.Padding(4)
         Me.rbExacta.Name = "rbExacta"
-        Me.rbExacta.Size = New System.Drawing.Size(83, 21)
+        Me.rbExacta.Size = New System.Drawing.Size(81, 20)
         Me.rbExacta.TabIndex = 71
         Me.rbExacta.Text = "EXACTA"
         Me.rbExacta.UseVisualStyleBackColor = True
@@ -3577,7 +3627,7 @@ Partial Class frmMain
         Me.rbTrifecta.Location = New System.Drawing.Point(25, 1038)
         Me.rbTrifecta.Margin = New System.Windows.Forms.Padding(4)
         Me.rbTrifecta.Name = "rbTrifecta"
-        Me.rbTrifecta.Size = New System.Drawing.Size(95, 21)
+        Me.rbTrifecta.Size = New System.Drawing.Size(94, 20)
         Me.rbTrifecta.TabIndex = 70
         Me.rbTrifecta.Text = "TRIFECTA"
         Me.rbTrifecta.UseVisualStyleBackColor = True
@@ -3650,6 +3700,11 @@ Partial Class frmMain
         Me.txtPostTimed.TabIndex = 9
         Me.txtPostTimed.TabStop = False
         Me.txtPostTimed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsPostTime
+        '
+        Me.bsPostTime.DataMember = "POSTTIME"
+        Me.bsPostTime.DataSource = Me.RaceDisplayDataset
         '
         'txtPostTimec
         '
@@ -3743,6 +3798,11 @@ Partial Class frmMain
         Me.txtTODD.TabStop = False
         Me.txtTODD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsTOD
+        '
+        Me.bsTOD.DataMember = "TOD"
+        Me.bsTOD.DataSource = Me.RaceDisplayDataset
+        '
         'txtTODC
         '
         Me.txtTODC.BackColor = System.Drawing.SystemColors.ControlText
@@ -3821,6 +3881,11 @@ Partial Class frmMain
         Me.txtRaceB.TabStop = False
         Me.txtRaceB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsRace
+        '
+        Me.bsRace.DataMember = "RACE"
+        Me.bsRace.DataSource = Me.RaceDisplayDataset
+        '
         'txtRaceA
         '
         Me.txtRaceA.BackColor = System.Drawing.SystemColors.ControlText
@@ -3865,6 +3930,11 @@ Partial Class frmMain
         Me.txtMTPB.TabIndex = 3
         Me.txtMTPB.TabStop = False
         Me.txtMTPB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsMTP
+        '
+        Me.bsMTP.DataMember = "MTP"
+        Me.bsMTP.DataSource = Me.RaceDisplayDataset
         '
         'txtMTPA
         '
@@ -4305,7 +4375,7 @@ Partial Class frmMain
         Me.chkPhoto.Location = New System.Drawing.Point(8, 49)
         Me.chkPhoto.Margin = New System.Windows.Forms.Padding(4)
         Me.chkPhoto.Name = "chkPhoto"
-        Me.chkPhoto.Size = New System.Drawing.Size(67, 21)
+        Me.chkPhoto.Size = New System.Drawing.Size(64, 20)
         Me.chkPhoto.TabIndex = 77
         Me.chkPhoto.TabStop = False
         Me.chkPhoto.Tag = "Photo*"
@@ -4319,7 +4389,7 @@ Partial Class frmMain
         Me.chkInqObj.Location = New System.Drawing.Point(92, 49)
         Me.chkInqObj.Margin = New System.Windows.Forms.Padding(4)
         Me.chkInqObj.Name = "chkInqObj"
-        Me.chkInqObj.Size = New System.Drawing.Size(83, 21)
+        Me.chkInqObj.Size = New System.Drawing.Size(78, 20)
         Me.chkInqObj.TabIndex = 79
         Me.chkInqObj.TabStop = False
         Me.chkInqObj.Tag = "INQUIRY/OBJECTION*"
@@ -4333,7 +4403,7 @@ Partial Class frmMain
         Me.chkDeadHeat.Location = New System.Drawing.Point(92, 23)
         Me.chkDeadHeat.Margin = New System.Windows.Forms.Padding(4)
         Me.chkDeadHeat.Name = "chkDeadHeat"
-        Me.chkDeadHeat.Size = New System.Drawing.Size(98, 21)
+        Me.chkDeadHeat.Size = New System.Drawing.Size(95, 20)
         Me.chkDeadHeat.TabIndex = 76
         Me.chkDeadHeat.TabStop = False
         Me.chkDeadHeat.Tag = "DEADHEAT"
@@ -4347,7 +4417,7 @@ Partial Class frmMain
         Me.chkOfficial.Location = New System.Drawing.Point(8, 23)
         Me.chkOfficial.Margin = New System.Windows.Forms.Padding(4)
         Me.chkOfficial.Name = "chkOfficial"
-        Me.chkOfficial.Size = New System.Drawing.Size(73, 21)
+        Me.chkOfficial.Size = New System.Drawing.Size(69, 20)
         Me.chkOfficial.TabIndex = 78
         Me.chkOfficial.TabStop = False
         Me.chkOfficial.Tag = "Official"
@@ -4374,7 +4444,7 @@ Partial Class frmMain
         Me.chkObj.Location = New System.Drawing.Point(204, 23)
         Me.chkObj.Margin = New System.Windows.Forms.Padding(4)
         Me.chkObj.Name = "chkObj"
-        Me.chkObj.Size = New System.Drawing.Size(90, 21)
+        Me.chkObj.Size = New System.Drawing.Size(86, 20)
         Me.chkObj.TabIndex = 1
         Me.chkObj.Tag = "OBJECTION*"
         Me.chkObj.Text = "Objection"
@@ -4387,7 +4457,7 @@ Partial Class frmMain
         Me.chkInq.Location = New System.Drawing.Point(204, 49)
         Me.chkInq.Margin = New System.Windows.Forms.Padding(4)
         Me.chkInq.Name = "chkInq"
-        Me.chkInq.Size = New System.Drawing.Size(72, 21)
+        Me.chkInq.Size = New System.Drawing.Size(68, 20)
         Me.chkInq.TabIndex = 0
         Me.chkInq.Tag = "INQUIRY*"
         Me.chkInq.Text = "Inquiry"
@@ -4502,6 +4572,11 @@ Partial Class frmMain
         Me.txt12e.TabStop = False
         Me.txt12e.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsTiming12
+        '
+        Me.bsTiming12.DataMember = "TIMING12"
+        Me.bsTiming12.DataSource = Me.RaceDisplayDataset
+        '
         'txt12c
         '
         Me.txt12c.BackColor = System.Drawing.SystemColors.ControlText
@@ -4600,6 +4675,11 @@ Partial Class frmMain
         Me.txtMilee.TabIndex = 180
         Me.txtMilee.TabStop = False
         Me.txtMilee.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsTimingMile
+        '
+        Me.bsTimingMile.DataMember = "TIMINGMILE"
+        Me.bsTimingMile.DataSource = Me.RaceDisplayDataset
         '
         'txtMilec
         '
@@ -4724,6 +4804,11 @@ Partial Class frmMain
         Me.txt14e.TabStop = False
         Me.txt14e.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
+        'bsTiming14
+        '
+        Me.bsTiming14.DataMember = "TIMING14"
+        Me.bsTiming14.DataSource = Me.RaceDisplayDataset
+        '
         'txt14c
         '
         Me.txt14c.BackColor = System.Drawing.SystemColors.ControlText
@@ -4809,6 +4894,11 @@ Partial Class frmMain
         Me.txt34e.TabIndex = 161
         Me.txt34e.TabStop = False
         Me.txt34e.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsTiming34
+        '
+        Me.bsTiming34.DataMember = "TIMING34"
+        Me.bsTiming34.DataSource = Me.RaceDisplayDataset
         '
         'txt34c
         '
@@ -4896,6 +4986,11 @@ Partial Class frmMain
         Me.txtFinishe.TabIndex = 155
         Me.txtFinishe.TabStop = False
         Me.txtFinishe.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsTimingFinish
+        '
+        Me.bsTimingFinish.DataMember = "TIMINGFINISH"
+        Me.bsTimingFinish.DataSource = Me.RaceDisplayDataset
         '
         'txtFinishc
         '
@@ -4986,12 +5081,12 @@ Partial Class frmMain
         Me.txtOfficial.BackColor = System.Drawing.SystemColors.ControlText
         Me.txtOfficial.Font = New System.Drawing.Font("Microsoft Sans Serif", 18.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtOfficial.ForeColor = System.Drawing.Color.Red
-        Me.txtOfficial.Location = New System.Drawing.Point(216, 546)
+        Me.txtOfficial.Location = New System.Drawing.Point(215, 542)
         Me.txtOfficial.Margin = New System.Windows.Forms.Padding(4)
         Me.txtOfficial.MaxLength = 8
         Me.txtOfficial.Name = "txtOfficial"
         Me.txtOfficial.ReadOnly = True
-        Me.txtOfficial.Size = New System.Drawing.Size(185, 41)
+        Me.txtOfficial.Size = New System.Drawing.Size(209, 41)
         Me.txtOfficial.TabIndex = 197
         Me.txtOfficial.TabStop = False
         '
@@ -5030,7 +5125,6 @@ Partial Class frmMain
         Me.msMain.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.ClearToolStripMenuItem, Me.CheckPerfonmanceToolStripMenuItem, Me.PortsToolStripMenuItem, Me.TimersToolStripMenuItem, Me.IntensityToolStripMenuItem, Me.SettingsToolStripMenuItem, Me.HelpToolStripMenuItem})
         Me.msMain.Location = New System.Drawing.Point(0, 0)
         Me.msMain.Name = "msMain"
-        Me.msMain.Padding = New System.Windows.Forms.Padding(8, 2, 0, 2)
         Me.msMain.Size = New System.Drawing.Size(1853, 32)
         Me.msMain.TabIndex = 198
         Me.msMain.Text = "MenuStrip1"
@@ -5040,7 +5134,7 @@ Partial Class frmMain
         Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CloseToolStripMenuItem})
         Me.FileToolStripMenuItem.Image = CType(resources.GetObject("FileToolStripMenuItem.Image"), System.Drawing.Image)
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(68, 28)
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(70, 28)
         Me.FileToolStripMenuItem.Text = "&File"
         '
         'ClearToolStripMenuItem
@@ -5048,7 +5142,7 @@ Partial Class frmMain
         Me.ClearToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ClearAllToolStripMenuItem, Me.ClearOddsToolStripMenuItem, Me.ClearRunningOrderToolStripMenuItem, Me.ClearWinToolStripMenuItem, Me.ClearPlaceToolStripMenuItem, Me.ClearShowToolStripMenuItem, Me.ClearExoticsToolStripMenuItem, Me.ClearResultsToolStripMenuItem, Me.ClearTimingToolStripMenuItem, Me.ClearManuallyToolStripMenuItem})
         Me.ClearToolStripMenuItem.Image = CType(resources.GetObject("ClearToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearToolStripMenuItem.Name = "ClearToolStripMenuItem"
-        Me.ClearToolStripMenuItem.Size = New System.Drawing.Size(79, 28)
+        Me.ClearToolStripMenuItem.Size = New System.Drawing.Size(81, 28)
         Me.ClearToolStripMenuItem.Text = "C&lear"
         Me.ClearToolStripMenuItem.Visible = False
         '
@@ -5056,68 +5150,68 @@ Partial Class frmMain
         '
         Me.ClearAllToolStripMenuItem.Image = CType(resources.GetObject("ClearAllToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearAllToolStripMenuItem.Name = "ClearAllToolStripMenuItem"
-        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearAllToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearAllToolStripMenuItem.Text = "Clear All"
         '
         'ClearOddsToolStripMenuItem
         '
         Me.ClearOddsToolStripMenuItem.Image = CType(resources.GetObject("ClearOddsToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearOddsToolStripMenuItem.Name = "ClearOddsToolStripMenuItem"
-        Me.ClearOddsToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearOddsToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearOddsToolStripMenuItem.Text = "Clear Odds"
         '
         'ClearRunningOrderToolStripMenuItem
         '
         Me.ClearRunningOrderToolStripMenuItem.Image = CType(resources.GetObject("ClearRunningOrderToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearRunningOrderToolStripMenuItem.Name = "ClearRunningOrderToolStripMenuItem"
-        Me.ClearRunningOrderToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearRunningOrderToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearRunningOrderToolStripMenuItem.Text = "Clear Running Order"
         '
         'ClearWinToolStripMenuItem
         '
         Me.ClearWinToolStripMenuItem.Image = CType(resources.GetObject("ClearWinToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearWinToolStripMenuItem.Name = "ClearWinToolStripMenuItem"
-        Me.ClearWinToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearWinToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearWinToolStripMenuItem.Text = "Clear Win"
         '
         'ClearPlaceToolStripMenuItem
         '
         Me.ClearPlaceToolStripMenuItem.Image = CType(resources.GetObject("ClearPlaceToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearPlaceToolStripMenuItem.Name = "ClearPlaceToolStripMenuItem"
-        Me.ClearPlaceToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearPlaceToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearPlaceToolStripMenuItem.Text = "Clear Place"
         '
         'ClearShowToolStripMenuItem
         '
         Me.ClearShowToolStripMenuItem.Image = CType(resources.GetObject("ClearShowToolStripMenuItem.Image"), System.Drawing.Image)
         Me.ClearShowToolStripMenuItem.Name = "ClearShowToolStripMenuItem"
-        Me.ClearShowToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearShowToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearShowToolStripMenuItem.Text = "Clear Show"
         '
         'ClearExoticsToolStripMenuItem
         '
         Me.ClearExoticsToolStripMenuItem.Name = "ClearExoticsToolStripMenuItem"
-        Me.ClearExoticsToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearExoticsToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearExoticsToolStripMenuItem.Text = "Clear Exotics"
         Me.ClearExoticsToolStripMenuItem.Visible = False
         '
         'ClearResultsToolStripMenuItem
         '
         Me.ClearResultsToolStripMenuItem.Name = "ClearResultsToolStripMenuItem"
-        Me.ClearResultsToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearResultsToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearResultsToolStripMenuItem.Text = "Clear Results"
         '
         'ClearTimingToolStripMenuItem
         '
         Me.ClearTimingToolStripMenuItem.Name = "ClearTimingToolStripMenuItem"
-        Me.ClearTimingToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearTimingToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearTimingToolStripMenuItem.Text = "Clear Timing"
         '
         'ClearManuallyToolStripMenuItem
         '
         Me.ClearManuallyToolStripMenuItem.CheckOnClick = True
         Me.ClearManuallyToolStripMenuItem.Name = "ClearManuallyToolStripMenuItem"
-        Me.ClearManuallyToolStripMenuItem.Size = New System.Drawing.Size(218, 26)
+        Me.ClearManuallyToolStripMenuItem.Size = New System.Drawing.Size(226, 26)
         Me.ClearManuallyToolStripMenuItem.Text = "Clear Manually"
         '
         'CheckPerfonmanceToolStripMenuItem
@@ -5125,7 +5219,7 @@ Partial Class frmMain
         Me.CheckPerfonmanceToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CheckIfReceivingDataToolStripMenuItem})
         Me.CheckPerfonmanceToolStripMenuItem.Image = CType(resources.GetObject("CheckPerfonmanceToolStripMenuItem.Image"), System.Drawing.Image)
         Me.CheckPerfonmanceToolStripMenuItem.Name = "CheckPerfonmanceToolStripMenuItem"
-        Me.CheckPerfonmanceToolStripMenuItem.Size = New System.Drawing.Size(171, 28)
+        Me.CheckPerfonmanceToolStripMenuItem.Size = New System.Drawing.Size(173, 28)
         Me.CheckPerfonmanceToolStripMenuItem.Text = "Check Performance"
         Me.CheckPerfonmanceToolStripMenuItem.Visible = False
         '
@@ -5133,21 +5227,21 @@ Partial Class frmMain
         '
         Me.CheckIfReceivingDataToolStripMenuItem.Image = CType(resources.GetObject("CheckIfReceivingDataToolStripMenuItem.Image"), System.Drawing.Image)
         Me.CheckIfReceivingDataToolStripMenuItem.Name = "CheckIfReceivingDataToolStripMenuItem"
-        Me.CheckIfReceivingDataToolStripMenuItem.Size = New System.Drawing.Size(240, 26)
+        Me.CheckIfReceivingDataToolStripMenuItem.Size = New System.Drawing.Size(248, 26)
         Me.CheckIfReceivingDataToolStripMenuItem.Text = "Check If Receiving Data"
         '
         'PortsToolStripMenuItem
         '
         Me.PortsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ChangeSerialPortToolStripMenuItem})
         Me.PortsToolStripMenuItem.Name = "PortsToolStripMenuItem"
-        Me.PortsToolStripMenuItem.Size = New System.Drawing.Size(53, 28)
+        Me.PortsToolStripMenuItem.Size = New System.Drawing.Size(55, 28)
         Me.PortsToolStripMenuItem.Text = "Ports"
         Me.PortsToolStripMenuItem.Visible = False
         '
         'ChangeSerialPortToolStripMenuItem
         '
         Me.ChangeSerialPortToolStripMenuItem.Name = "ChangeSerialPortToolStripMenuItem"
-        Me.ChangeSerialPortToolStripMenuItem.Size = New System.Drawing.Size(205, 26)
+        Me.ChangeSerialPortToolStripMenuItem.Size = New System.Drawing.Size(213, 26)
         Me.ChangeSerialPortToolStripMenuItem.Text = "Change Serial Port"
         '
         'TimersToolStripMenuItem
@@ -5155,7 +5249,7 @@ Partial Class frmMain
         Me.TimersToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.OfficialResultsToolStripMenuItem})
         Me.TimersToolStripMenuItem.Image = CType(resources.GetObject("TimersToolStripMenuItem.Image"), System.Drawing.Image)
         Me.TimersToolStripMenuItem.Name = "TimersToolStripMenuItem"
-        Me.TimersToolStripMenuItem.Size = New System.Drawing.Size(89, 28)
+        Me.TimersToolStripMenuItem.Size = New System.Drawing.Size(91, 28)
         Me.TimersToolStripMenuItem.Text = "&Timers"
         Me.TimersToolStripMenuItem.Visible = False
         '
@@ -5164,7 +5258,7 @@ Partial Class frmMain
         Me.OfficialResultsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripComboBox2})
         Me.OfficialResultsToolStripMenuItem.Image = CType(resources.GetObject("OfficialResultsToolStripMenuItem.Image"), System.Drawing.Image)
         Me.OfficialResultsToolStripMenuItem.Name = "OfficialResultsToolStripMenuItem"
-        Me.OfficialResultsToolStripMenuItem.Size = New System.Drawing.Size(182, 26)
+        Me.OfficialResultsToolStripMenuItem.Size = New System.Drawing.Size(190, 26)
         Me.OfficialResultsToolStripMenuItem.Text = "Official Results"
         '
         'ToolStripComboBox2
@@ -5177,7 +5271,7 @@ Partial Class frmMain
         '
         Me.IntensityToolStripMenuItem.Image = CType(resources.GetObject("IntensityToolStripMenuItem.Image"), System.Drawing.Image)
         Me.IntensityToolStripMenuItem.Name = "IntensityToolStripMenuItem"
-        Me.IntensityToolStripMenuItem.Size = New System.Drawing.Size(100, 28)
+        Me.IntensityToolStripMenuItem.Size = New System.Drawing.Size(102, 28)
         Me.IntensityToolStripMenuItem.Text = "Intensity"
         Me.IntensityToolStripMenuItem.Visible = False
         '
@@ -5185,7 +5279,7 @@ Partial Class frmMain
         '
         Me.SettingsToolStripMenuItem.Image = CType(resources.GetObject("SettingsToolStripMenuItem.Image"), System.Drawing.Image)
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(98, 28)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(100, 28)
         Me.SettingsToolStripMenuItem.Text = "Settings"
         '
         'HelpToolStripMenuItem
@@ -5193,14 +5287,14 @@ Partial Class frmMain
         Me.HelpToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AboutToolStripMenuItem})
         Me.HelpToolStripMenuItem.Image = CType(resources.GetObject("HelpToolStripMenuItem.Image"), System.Drawing.Image)
         Me.HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
-        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(77, 28)
+        Me.HelpToolStripMenuItem.Size = New System.Drawing.Size(79, 28)
         Me.HelpToolStripMenuItem.Text = "&Help"
         Me.HelpToolStripMenuItem.Visible = False
         '
         'AboutToolStripMenuItem
         '
         Me.AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(125, 26)
+        Me.AboutToolStripMenuItem.Size = New System.Drawing.Size(133, 26)
         Me.AboutToolStripMenuItem.Text = "&About"
         '
         'btnSetFinalTimes
@@ -5334,6 +5428,11 @@ Partial Class frmMain
         Me.txtPoolTotB.TabIndex = 78
         Me.txtPoolTotB.TabStop = False
         Me.txtPoolTotB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'bsWPSPools
+        '
+        Me.bsWPSPools.DataMember = "EXOTICS"
+        Me.bsWPSPools.DataSource = Me.RaceDisplayDataset
         '
         'txtPoolTotA
         '
@@ -6460,7 +6559,7 @@ Partial Class frmMain
         Me.lblCycleNum.Location = New System.Drawing.Point(559, 412)
         Me.lblCycleNum.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblCycleNum.Name = "lblCycleNum"
-        Me.lblCycleNum.Size = New System.Drawing.Size(16, 17)
+        Me.lblCycleNum.Size = New System.Drawing.Size(14, 16)
         Me.lblCycleNum.TabIndex = 80
         Me.lblCycleNum.Text = "1"
         Me.lblCycleNum.Visible = False
@@ -6583,106 +6682,6 @@ Partial Class frmMain
         Me.gbWPSPools.TabIndex = 79
         Me.gbWPSPools.TabStop = False
         '
-        'bsTiming12
-        '
-        Me.bsTiming12.DataMember = "TIMING12"
-        Me.bsTiming12.DataSource = Me.RaceDisplayDataset
-        '
-        'RaceDisplayDataset
-        '
-        Me.RaceDisplayDataset.DataSetName = "RaceDisplayDataset"
-        Me.RaceDisplayDataset.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema
-        '
-        'bsTimingMile
-        '
-        Me.bsTimingMile.DataMember = "TIMINGMILE"
-        Me.bsTimingMile.DataSource = Me.RaceDisplayDataset
-        '
-        'bsTiming14
-        '
-        Me.bsTiming14.DataMember = "TIMING14"
-        Me.bsTiming14.DataSource = Me.RaceDisplayDataset
-        '
-        'bsTiming34
-        '
-        Me.bsTiming34.DataMember = "TIMING34"
-        Me.bsTiming34.DataSource = Me.RaceDisplayDataset
-        '
-        'bsTimingFinish
-        '
-        Me.bsTimingFinish.DataMember = "TIMINGFINISH"
-        Me.bsTimingFinish.DataSource = Me.RaceDisplayDataset
-        '
-        'bsTOD
-        '
-        Me.bsTOD.DataMember = "TOD"
-        Me.bsTOD.DataSource = Me.RaceDisplayDataset
-        '
-        'bsRace
-        '
-        Me.bsRace.DataMember = "RACE"
-        Me.bsRace.DataSource = Me.RaceDisplayDataset
-        '
-        'bsPostTime
-        '
-        Me.bsPostTime.DataMember = "POSTTIME"
-        Me.bsPostTime.DataSource = Me.RaceDisplayDataset
-        '
-        'bsMTP
-        '
-        Me.bsMTP.DataMember = "MTP"
-        Me.bsMTP.DataSource = Me.RaceDisplayDataset
-        '
-        'bsBet3
-        '
-        Me.bsBet3.DataMember = "BET3"
-        Me.bsBet3.DataSource = Me.RaceDisplayDataset
-        '
-        'bsDD
-        '
-        Me.bsDD.DataMember = "DAILYDOUBLE"
-        Me.bsDD.DataSource = Me.RaceDisplayDataset
-        '
-        'bsShow
-        '
-        Me.bsShow.DataMember = "SHOW"
-        Me.bsShow.DataSource = Me.RaceDisplayDataset
-        '
-        'bsPlace
-        '
-        Me.bsPlace.DataMember = "PLACE"
-        Me.bsPlace.DataSource = Me.RaceDisplayDataset
-        '
-        'bsWin
-        '
-        Me.bsWin.DataMember = "WIN"
-        Me.bsWin.DataSource = Me.RaceDisplayDataset
-        '
-        'bsRunningOrder
-        '
-        Me.bsRunningOrder.DataMember = "RUNNINGORDER"
-        Me.bsRunningOrder.DataSource = Me.RaceDisplayDataset
-        '
-        'bsODDS
-        '
-        Me.bsODDS.DataMember = "ODDS"
-        Me.bsODDS.DataSource = Me.RaceDisplayDataset
-        '
-        'bsTrifecta
-        '
-        Me.bsTrifecta.DataMember = "TRIFECTA"
-        Me.bsTrifecta.DataSource = Me.RaceDisplayDataset
-        '
-        'bsPerfecta
-        '
-        Me.bsPerfecta.DataMember = "PERFECTA"
-        Me.bsPerfecta.DataSource = Me.RaceDisplayDataset
-        '
-        'bsWPSPools
-        '
-        Me.bsWPSPools.DataMember = "EXOTICS"
-        Me.bsWPSPools.DataSource = Me.RaceDisplayDataset
-        '
         'bsStatus
         '
         Me.bsStatus.DataMember = "STATUS"
@@ -6744,30 +6743,44 @@ Partial Class frmMain
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.gbOdds.ResumeLayout(False)
         Me.gbOdds.PerformLayout()
+        CType(Me.bsODDS, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.RaceDisplayDataset, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbOrder.ResumeLayout(False)
         Me.gbOrder.PerformLayout()
+        CType(Me.bsRunningOrder, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbWin.ResumeLayout(False)
         Me.gbWin.PerformLayout()
+        CType(Me.bsWin, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbPlace.ResumeLayout(False)
         Me.gbPlace.PerformLayout()
+        CType(Me.bsPlace, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbShow.ResumeLayout(False)
         Me.gbShow.PerformLayout()
+        CType(Me.bsShow, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbDD.ResumeLayout(False)
         Me.gbDD.PerformLayout()
+        CType(Me.bsDD, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbPerfecta.ResumeLayout(False)
         Me.gbPerfecta.PerformLayout()
+        CType(Me.bsPerfecta, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbBet3.ResumeLayout(False)
         Me.gbBet3.PerformLayout()
+        CType(Me.bsBet3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbTrifecta.ResumeLayout(False)
         Me.gbTrifecta.PerformLayout()
+        CType(Me.bsTrifecta, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbPostTime.ResumeLayout(False)
         Me.gbPostTime.PerformLayout()
+        CType(Me.bsPostTime, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbTime.ResumeLayout(False)
         Me.gbTime.PerformLayout()
+        CType(Me.bsTOD, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        CType(Me.bsRace, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gbMTP.ResumeLayout(False)
         Me.gbMTP.PerformLayout()
+        CType(Me.bsMTP, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox9.ResumeLayout(False)
         Me.GroupBox9.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
@@ -6780,30 +6793,16 @@ Partial Class frmMain
         Me.gbOptions.PerformLayout()
         Me.gbTiming.ResumeLayout(False)
         Me.gbTiming.PerformLayout()
-        Me.msMain.ResumeLayout(False)
-        Me.msMain.PerformLayout()
-        Me.gbWPSPools.ResumeLayout(False)
-        Me.gbWPSPools.PerformLayout()
         CType(Me.bsTiming12, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.RaceDisplayDataset, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.bsTimingMile, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.bsTiming14, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.bsTiming34, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.bsTimingFinish, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsTOD, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsRace, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsPostTime, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsMTP, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsBet3, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsDD, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsShow, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsPlace, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsWin, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsRunningOrder, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsODDS, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsTrifecta, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.bsPerfecta, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.msMain.ResumeLayout(False)
+        Me.msMain.PerformLayout()
         CType(Me.bsWPSPools, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.gbWPSPools.ResumeLayout(False)
+        Me.gbWPSPools.PerformLayout()
         CType(Me.bsStatus, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
