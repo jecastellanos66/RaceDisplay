@@ -4392,7 +4392,7 @@ Partial Class frmMain
         Me.chkInqObj.Size = New System.Drawing.Size(78, 20)
         Me.chkInqObj.TabIndex = 79
         Me.chkInqObj.TabStop = False
-        Me.chkInqObj.Tag = "INQUIRY/OBJECTION*"
+        Me.chkInqObj.Tag = "INQ/OBJ*"
         Me.chkInqObj.Text = "Inq / Obj"
         Me.chkInqObj.UseVisualStyleBackColor = True
         '

@@ -104,7 +104,24 @@ Public Class frmMain
             Me.KillComSvr()
             Me.KillDataSvr()
             'Me.myCommSvr = New CommSvr
-            Me.InitializePorts()
+
+            'Comm Port to use will always be the second parameter
+            Dim args As String()
+            args = Environment.GetCommandLineArgs
+
+            Dim comPort As Integer
+            Dim comPortParam = args.FirstOrDefault(Function(a) a.ToLower().IndexOf("toteboardportnumber=") >= 0)
+
+            If String.IsNullOrWhiteSpace(comPortParam) Then
+                comPort = 2 'Default to comPort2 for tote board
+            Else
+                If Not Integer.TryParse(comPortParam.Substring(20), comPort) Then
+                    Throw New InvalidOperationException("The ToteBoardPortNumber has an invalid value")
+                End If
+            End If
+
+
+            Me.InitializePorts(comPort)
             Me.myColMessages = New Collection
             Me.myMiniColMessages = New Collection
             'Me.RaceDisplayDataset = Me.myCommSvr.Dataset
@@ -2007,14 +2024,14 @@ Public Class frmMain
 
 #Region " Helper Methods "
 
-    Private Sub InitializePorts()
+    Private Sub InitializePorts(comPort As Integer)
         'Este programa usa el CommPort 1 para Tote
         'No tiene Teletimer, pero si lo tuviera fuera el CommPort 4
 
         Me.myComPort = New ComPort.Port
         'Me.myMiniComPort = New ComPort.Port
         '
-        Me.myComPort.SetPortSettings(2, "19200,N,8,1") '2
+        Me.myComPort.SetPortSettings(comPort, "19200,N,8,1") '2
         'Me.myMiniComPort.SetPortSettings(3, "19200,N,8,1") '3 9600
         ''
     End Sub
@@ -2047,7 +2064,7 @@ Public Class frmMain
             Me.myComPort = Nothing
             'Me.myMiniComPort = Nothing
 
-            Me.InitializePorts()
+            Me.InitializePorts(2)
 
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -6497,6 +6514,7 @@ Public Class frmMain
                     If sender.Checked Then
                         Dim holdAllTickes As Boolean = (InStr(sender.Tag, "*") > 0)
                         Dim officialText = UCase(Replace(sender.Tag, "*", ""))
+
                         m_FlagChangeEvent = False
                         ClearStatus(sender.Name)
                         m_FlagChangeEvent = True
@@ -6573,7 +6591,8 @@ Public Class frmMain
         Dim strTemp As String = txtOfficial.Text
         strTemp = strTemp.ToString.PadRight(8, " ")
 
-        Dim strDatatosend = PrepareDataThreeColorSignStatus(strTemp, Color.Red, 24)
+        Dim fontSize As Integer = If(strTemp.Length <= 8, 24, 16)
+        Dim strDatatosend = PrepareDataThreeColorSignStatus(strTemp, Color.Red, fontSize) '24
         strDatatosend = strDatatosend.Replace(" ", "")
 
         Try
