@@ -890,27 +890,31 @@ ErrHndlr:
         Try
             '
             If ObjOdds Is Nothing Then Return
-            '
-            For i As Integer = 1 To (ObjOdds.NumberOfRows)
-                If i > 12 Then Exit For 'in case more than 16 odds
-                '
-                s = ObjOdds.OddsByRunner(i)
-                'fill up array to identify if odd has "/"
-                'Me.myArrOdds(i - 1) = If(s.Contains("/") OrElse s.Contains("-"), 1, 0)
-                Me.myArrOdds(i - 1) = If(s Like "#/#" OrElse s Like "#-#", 1, 0)
-                'Me.myArrOdds(i - 1) = IIf(s.Contains("/"), 1, 0)
-                '
-                If ((s IsNot Nothing) And (Val(s) > 0)) Then
-                    s = Me.FixString(s)
-                Else
-                    s = "  "
-                End If
-                '
-                drOdds(x) = s.Substring(0, 1)
-                drOdds(x + 1) = s.Substring(1, 1)
-                x += 2
-                '
-            Next
+
+            'The board currently can process up to 12 horses
+            'If more than 12, do not send odds
+            If ObjOdds.NumberOfRows <= 12 Then
+                For i As Integer = 1 To (ObjOdds.NumberOfRows)
+                    'If i > 12 Then Exit For 'in case more than 16 odds ...
+                    '
+                    s = ObjOdds.OddsByRunner(i)
+                    'fill up array to identify if odd has "/"
+                    'Me.myArrOdds(i - 1) = If(s.Contains("/") OrElse s.Contains("-"), 1, 0)
+                    Me.myArrOdds(i - 1) = If(s Like "#/#" OrElse s Like "#-#", 1, 0)
+                    'Me.myArrOdds(i - 1) = IIf(s.Contains("/"), 1, 0)
+                    '
+                    If ((s IsNot Nothing) And (Val(s) > 0)) Then
+                        s = Me.FixString(s)
+                    Else
+                        s = "  "
+                    End If
+                    '
+                    drOdds(x) = s.Substring(0, 1)
+                    drOdds(x + 1) = s.Substring(1, 1)
+                    x += 2
+                    '
+                Next
+            End If
             '
         Catch ex As Exception
             '
