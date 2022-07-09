@@ -757,120 +757,137 @@ ErrHndlr:
         Dim drWPSPools As RaceDisplayDataset.EXOTICSRow
         drWPSPools = Me.myDataset.EXOTICS.NewEXOTICSRow
 
-        drWPSPools.BeginEdit()
-        drWPSPools.RACEKEY = intRace
-        If (strType = "WIN") Then
-            drWPSPools.POOLTYPEA = "WIN"
-        ElseIf (strType = "PLC") Then
-            drWPSPools.POOLTYPEA = "PLACE"
-        ElseIf strType = "SHW" Then
-            drWPSPools.POOLTYPEA = "SHOW"
-        End If
+        Dim processPoolsMsg As Boolean
+        processPoolsMsg = (strType = "WIN" And m_objWINPool(intRace).NumberOfRows <= 12)
+        processPoolsMsg = processPoolsMsg Or (strType = "PLC" And m_objPlacePool(intRace).NumberOfRows <= 12)
+        processPoolsMsg = processPoolsMsg Or (strType = "SHW" And m_objShowPool(intRace).NumberOfRows <= 12)
 
-        Try
-            If ((intRace > 0) And (intRace <= p_intMaxNumbOfRaces)) Then
-                If (strType.Trim = "WIN") Then
-                    If (p_blnWINPool) Then
-                        objWPSPools = m_objWINPool(intRace)
-                    End If
-                ElseIf (strType.Trim = "PLC") Then
-                    If (p_blnPlacePool) Then
-                        objWPSPools = m_objPlacePool(intRace)
-                    End If
-                ElseIf (strType.Trim = "SHW") Then
-                    If (p_blnShowPool) Then
-                        objWPSPools = m_objShowPool(intRace)
-                    End If
-                End If
-                If Not IsDBNull(objWPSPools.PoolCode) Then
-                    blnWPSFound = True
-                End If
+        If processPoolsMsg Then
+            drWPSPools.BeginEdit()
+            drWPSPools.RACEKEY = intRace
+            If (strType = "WIN") Then
+                drWPSPools.POOLTYPEA = "WIN"
+            ElseIf (strType = "PLC") Then
+                drWPSPools.POOLTYPEA = "PLACE"
+            ElseIf strType = "SHW" Then
+                drWPSPools.POOLTYPEA = "SHOW"
             End If
 
-            'If objWPSPools Is Nothing Then Return
-
-            If (blnWPSFound) Then
-                'grab the pool's total
-                s = Trim(objWPSPools.PoolTotal)
-                'fix amount
-                If s IsNot Nothing Then
-                    s = Me.FixAmount(s, 6)
-                    s = s.Replace(",", "")
-                    IndexOfs = InStr(s, ".")
-                    If (IndexOfs > 0) Then
-                        s = s.Remove(IndexOfs - 1, Len(s) - IndexOfs + 1)
+            Try
+                If ((intRace > 0) And (intRace <= p_intMaxNumbOfRaces)) Then
+                    If (strType.Trim = "WIN") Then
+                        If (p_blnWINPool) Then
+                            objWPSPools = m_objWINPool(intRace)
+                        End If
+                    ElseIf (strType.Trim = "PLC") Then
+                        If (p_blnPlacePool) Then
+                            objWPSPools = m_objPlacePool(intRace)
+                        End If
+                    ElseIf (strType.Trim = "SHW") Then
+                        If (p_blnShowPool) Then
+                            objWPSPools = m_objShowPool(intRace)
+                        End If
                     End If
-                    s = s.ToString.PadLeft(6, " ")
-                Else
-                    s = "      "
+                    If Not IsDBNull(objWPSPools.PoolCode) Then
+                        blnWPSFound = True
+                    End If
                 End If
 
-                'populate the pool total (6 spots (A-F))
-                drWPSPools.POOLTOTA = s.Substring(0, 1)
-                drWPSPools.POOLTOTB = s.Substring(1, 1)
-                drWPSPools.POOLTOTC = s.Substring(2, 1)
-                drWPSPools.POOLTOTD = s.Substring(3, 1)
-                drWPSPools.POOLTOTE = s.Substring(4, 1)
-                drWPSPools.POOLTOTF = s.Substring(5, 1)
+                'If objWPSPools Is Nothing Then Return
 
-                'grab each individual horse's pool value
-                x = 8 'to set field index
-                For i As Integer = 1 To (objWPSPools.NumberOfRows)
-                    If i > 12 Then Exit For 'in case more than 12 runners
-                    '
-                    s = Trim(objWPSPools.Amount(i).ToString())
-                    '
-                    If ((s IsNot Nothing) And (IsNumeric(s))) Then
-                        s = Me.FixAmount(s, 5)
+                If (blnWPSFound) Then
+                    'grab the pool's total
+                    s = Trim(objWPSPools.PoolTotal)
+                    'fix amount
+                    If s IsNot Nothing Then
+                        s = Me.FixAmount(s, 6)
                         s = s.Replace(",", "")
                         IndexOfs = InStr(s, ".")
                         If (IndexOfs > 0) Then
                             s = s.Remove(IndexOfs - 1, Len(s) - IndexOfs + 1)
                         End If
-                        s = s.ToString.PadLeft(5, " ")
+                        s = s.ToString.PadLeft(6, " ")
                     Else
-                        s = "     "
+                        s = "      "
                     End If
-                    '
-                    drWPSPools(x) = s.Substring(0, 1)
-                    drWPSPools(x + 1) = s.Substring(1, 1)
-                    drWPSPools(x + 2) = s.Substring(2, 1)
-                    drWPSPools(x + 3) = s.Substring(3, 1)
-                    drWPSPools(x + 4) = s.Substring(4, 1)
-                    x += 5
-                    '
-                Next
-            Else
-                'ClearWPS();
-            End If
 
-        Catch ex As Exception
-            drWPSPools.POOLTYPEA = ""
-            'populate the pool total (6 spots (A-F))
-            s = "      "
-            drWPSPools.POOLTOTA = s.Substring(0, 1)
-            drWPSPools.POOLTOTB = s.Substring(1, 1)
-            drWPSPools.POOLTOTC = s.Substring(2, 1)
-            drWPSPools.POOLTOTD = s.Substring(3, 1)
-            drWPSPools.POOLTOTE = s.Substring(4, 1)
-            drWPSPools.POOLTOTF = s.Substring(5, 1)
-            x = 8  'to set field index
-            For i As Integer = 1 To 12 '12 runners
-                s = "     "
-                drWPSPools(x) = s.Substring(0, 1)
-                drWPSPools(x + 1) = s.Substring(1, 1)
-                drWPSPools(x + 2) = s.Substring(2, 1)
-                drWPSPools(x + 3) = s.Substring(3, 1)
-                drWPSPools(x + 4) = s.Substring(4, 1)
-                x += 5
-            Next
-            '
-        End Try
+                    'populate the pool total (6 spots (A-F))
+                    drWPSPools.POOLTOTA = s.Substring(0, 1)
+                    drWPSPools.POOLTOTB = s.Substring(1, 1)
+                    drWPSPools.POOLTOTC = s.Substring(2, 1)
+                    drWPSPools.POOLTOTD = s.Substring(3, 1)
+                    drWPSPools.POOLTOTE = s.Substring(4, 1)
+                    drWPSPools.POOLTOTF = s.Substring(5, 1)
 
-        drWPSPools.EndEdit()
-        Me.myDataset.EXOTICS.AddEXOTICSRow(drWPSPools)
-        '
+                    'grab each individual horse's pool value
+                    x = 8 'to set field index
+                    For i As Integer = 1 To (objWPSPools.NumberOfRows)
+                        If i > 12 Then Exit For 'in case more than 12 runners
+                        '
+                        s = Trim(objWPSPools.Amount(i).ToString())
+                        '
+                        If ((s IsNot Nothing) And (IsNumeric(s))) Then
+                            s = Me.FixAmount(s, 5)
+                            s = s.Replace(",", "")
+                            IndexOfs = InStr(s, ".")
+                            If (IndexOfs > 0) Then
+                                s = s.Remove(IndexOfs - 1, Len(s) - IndexOfs + 1)
+                            End If
+                            s = s.ToString.PadLeft(5, " ")
+                        Else
+                            s = "     "
+                        End If
+                        '
+                        drWPSPools(x) = s.Substring(0, 1)
+                        drWPSPools(x + 1) = s.Substring(1, 1)
+                        drWPSPools(x + 2) = s.Substring(2, 1)
+                        drWPSPools(x + 3) = s.Substring(3, 1)
+                        drWPSPools(x + 4) = s.Substring(4, 1)
+                        x += 5
+                        '
+                    Next
+                Else
+                    'ClearWPS();
+                End If
+
+            Catch ex As Exception
+                ClearPoolsObjectRow(drWPSPools)
+            End Try
+
+            drWPSPools.EndEdit()
+            Me.myDataset.EXOTICS.AddEXOTICSRow(drWPSPools)
+        Else
+            ClearPoolsObjectRow(drWPSPools)
+        End If
+
         objWPSPools = Nothing
+    End Sub
+
+    Private Sub ClearPoolsObjectRow(ByRef drWPSPools As RaceDisplayDataset.EXOTICSRow)
+        Dim x As Integer
+        Dim s As String
+
+        drWPSPools.POOLTYPEA = ""
+        'populate the pool total (6 spots (A-F))
+        s = "      "
+        drWPSPools.POOLTOTA = s.Substring(0, 1)
+        drWPSPools.POOLTOTB = s.Substring(1, 1)
+        drWPSPools.POOLTOTC = s.Substring(2, 1)
+        drWPSPools.POOLTOTD = s.Substring(3, 1)
+        drWPSPools.POOLTOTE = s.Substring(4, 1)
+        drWPSPools.POOLTOTF = s.Substring(5, 1)
+
+        x = 8  'to set field index
+        s = "     "
+        For i As Integer = 1 To 12 '12 runners
+
+            drWPSPools(x) = s.Substring(0, 1)
+            drWPSPools(x + 1) = s.Substring(1, 1)
+            drWPSPools(x + 2) = s.Substring(2, 1)
+            drWPSPools(x + 3) = s.Substring(3, 1)
+            drWPSPools(x + 4) = s.Substring(4, 1)
+            x += 5
+        Next
     End Sub
 
     Private Sub UpdateOdds(ByVal ObjOdds As clsOdds, ByVal intRace As Integer)
