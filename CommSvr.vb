@@ -276,7 +276,7 @@ Public Class CommSvr
         data.DeaheatRunners = New String(4) {}
         If (NumbDH > 0) Then
             For intCounter = 1 To NumbDH
-                data.DeaheatRunners(intCounter - 1) = Mid(message, intInfoPointer, 4)
+                data.DeaheatRunners(intCounter - 1) = Mid(message, intInfoPointer, 4).Trim(".").Trim(",").Trim()
                 intInfoPointer = intInfoPointer + 4
             Next intCounter
         End If

@@ -130,13 +130,13 @@
     Public Function GetStatusRuners() As String()
         Dim statusRunners() As String = Nothing
 
-        If _objectionRunners.Length > 0 Then
+        If _objectionRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) Then
             statusRunners = _objectionRunners
-        ElseIf _inqueryRunners.Length > 0 Then
+        ElseIf _inqueryRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) Then
             statusRunners = _inqueryRunners
-        ElseIf _deadheatRunners.Length > 0 Then
+        ElseIf _deadheatRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) Then
             statusRunners = _deadheatRunners
-        ElseIf _photoRunners.Length > 0 Then
+        ElseIf _photoRunners.Any(Function(dh) Not String.IsNullOrWhiteSpace(dh)) Then
             statusRunners = _photoRunners
         End If
 

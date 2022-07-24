@@ -5425,15 +5425,17 @@ Public Class frmMain
                     If Not flashingRunners Is Nothing Then
                         Dim strTemp As String = ""
                         For i As Integer = 0 To flashingRunners.Length - 1
-                            strTemp = flashingRunners(i).Trim.ToUpper()
-                            If (strTemp = (Me.txtRunning1.Text & Me.txtRunning1A.Text).Trim.ToUpper()) Then
-                                Me.chkResults1.Checked = True
-                            ElseIf (strTemp = (Me.txtRunning2.Text & Me.txtRunning2A.Text).Trim.ToUpper()) Then
-                                Me.chkResults2.Checked = True
-                            ElseIf (strTemp = (Me.txtRunning3.Text & Me.txtRunning3A.Text).Trim.ToUpper()) Then
-                                Me.chkResults3.Checked = True
-                            ElseIf (strTemp = (Me.txtRunning4.Text & Me.txtRunning4A.Text).Trim.ToUpper()) Then
-                                Me.chkResults4.Checked = True
+                            If Not flashingRunners(i) Is Nothing Then
+                                strTemp = flashingRunners(i).Trim.ToUpper()
+                                If (strTemp = (Me.txtRunning1.Text & Me.txtRunning1A.Text).Trim.ToUpper()) Then
+                                    Me.chkResults1.Checked = True
+                                ElseIf (strTemp = (Me.txtRunning2.Text & Me.txtRunning2A.Text).Trim.ToUpper()) Then
+                                    Me.chkResults2.Checked = True
+                                ElseIf (strTemp = (Me.txtRunning3.Text & Me.txtRunning3A.Text).Trim.ToUpper()) Then
+                                    Me.chkResults3.Checked = True
+                                ElseIf (strTemp = (Me.txtRunning4.Text & Me.txtRunning4A.Text).Trim.ToUpper()) Then
+                                    Me.chkResults4.Checked = True
+                                End If
                             End If
                         Next
                     End If
