@@ -271,12 +271,32 @@ Public Class CommSvr
         data.Deaheat = UCase(strTemp) = "DEA"
         intInfoPointer = intInfoPointer + 3
 
+        'From protocol document...
+        '   <',’> indicates dead heat with next.
+        '   <'.’> indicates next position.
+        '   <' ‘> indicates nothing follows.
+
         Dim NumbDH As Integer = CInt(Mid(message, intInfoPointer, 1))
         intInfoPointer = intInfoPointer + 1
-        data.DeaheatRunners = New String(4) {}
+
+        Dim numOfDhRunners As Integer = 4
+        data.DeaheatRunners = New String(numOfDhRunners) {}
         If (NumbDH > 0) Then
+            Dim runnerIdx As Integer = 0
             For intCounter = 1 To NumbDH
-                data.DeaheatRunners(intCounter - 1) = Mid(message, intInfoPointer, 4).Trim(".").Trim(",").Trim()
+                Dim runnerData As String = Mid(message, intInfoPointer, 4)
+
+                If (runnerData.EndsWith(",")) Then
+                    'Found dead hit with next.. get runner
+                    AddDeadHeatRunner(numOfDhRunners, Mid(message, intInfoPointer, 3).Trim(), runnerIdx, data.DeaheatRunners)
+
+                    'Get next runner 
+                    intInfoPointer = intInfoPointer + 4
+                    AddDeadHeatRunner(numOfDhRunners, Mid(message, intInfoPointer, 3).Trim(), runnerIdx, data.DeaheatRunners)
+                ElseIf (runnerData.EndsWith(" ")) Then
+                    Exit For
+                End If
+
                 intInfoPointer = intInfoPointer + 4
             Next intCounter
         End If
@@ -288,6 +308,13 @@ Public Class CommSvr
 ErrHndlr:
         'Implement error logging
     End Function
+
+    Private Sub AddDeadHeatRunner(numOfDhRunners As Integer, dhRunner As String, ByRef runnerIdx As Integer, ByRef dhRunners As String())
+        If runnerIdx < numOfDhRunners Then
+            dhRunners(runnerIdx) = dhRunner
+            runnerIdx = runnerIdx + 1
+        End If
+    End Sub
 
     Private Function IsJudgeMessage(message As String) As Boolean
 
