@@ -5446,18 +5446,27 @@ Public Class frmMain
 
             Me.PrepareRunningOrderDataToSend()
 
+            ClearStatusCheckboxes()
+
             Me.chkOfficial.Checked = jmData.Official
+
+            'If we just set status to official, do not let
+            'other status change it to something else
+            If Me.chkOfficial.Checked Then
+                m_FlagChangeEvent = False
+            End If
+
             Me.chkDeadHeat.Checked = jmData.Deaheat
             Me.chkPhoto.Checked = jmData.Photo
             Me.chkInqObj.Checked = jmData.Inquiry And jmData.Objection
             Me.chkInq.Checked = jmData.Inquiry
             Me.chkObj.Checked = jmData.Objection
 
+            m_FlagChangeEvent = True
+
             If (Not (jmData.Official Or jmData.Deaheat Or jmData.Photo Or jmData.Objection Or jmData.Inquiry)) Then
                 Try
-                    m_FlagChangeEvent = False
-                    ClearStatus("")
-                    m_FlagChangeEvent = True
+                    ClearStatusCheckboxes()
                 Catch ex As Exception
                     m_FlagChangeEvent = True
                 End Try
@@ -5472,6 +5481,12 @@ Public Class frmMain
         Catch ex As Exception
             '
         End Try
+    End Sub
+
+    Private Sub ClearStatusCheckboxes()
+        m_FlagChangeEvent = False
+        ClearStatus("")
+        m_FlagChangeEvent = True
     End Sub
 
     Private Delegate Sub ResetRaceStatusJMBindingSource()
