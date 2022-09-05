@@ -1,4 +1,5 @@
 ﻿
+Imports System.Configuration
 Imports System.Text
 
 Public Class frmMain
@@ -187,7 +188,17 @@ Public Class frmMain
         '
         ''''
         'TODO: *** Make skipNewOfficialStatusEvent CommSvr parameter configurable ***
-        Me.myCommSvr = New CommSvr(True)
+
+        Dim skipOfficialEevent As Boolean = True
+        Dim skipNewOfficialStatusEvent As String = ConfigurationManager.AppSettings("skipNewOfficialStatusEvent")
+        If Not String.IsNullOrWhiteSpace(skipNewOfficialStatusEvent) Then
+            Dim configSkip As Boolean
+            If Boolean.TryParse(skipNewOfficialStatusEvent, configSkip) Then
+                skipOfficialEevent = configSkip
+            End If
+        End If
+        Me.myCommSvr = New CommSvr(skipOfficialEevent)
+
         Me.RaceDisplayDataset = Me.myCommSvr.Dataset
         AddHandler Me.myCommSvr.DisplayNewRace, AddressOf myCommSvr_DisplayNewRace
         AddHandler Me.myCommSvr.DisplayNewOdds, AddressOf myCommSvr_DisplayNewOdds
@@ -236,7 +247,7 @@ Public Class frmMain
                 If myCommSvr.m_ApplicationBussy Then
                     Application.DoEvents()
                 End If
-                Me.myTrackCondition = Me.myCommSvr.p_strToteTrackCondition 'Me.myCommSvr.oCommServer.CurrentTrackCondition 'Tote
+                Me.myTrackCondition = Me.myCommSvr.p_strToteTrackCondition 'Me.myCommSvr.oCommServerNet.CurrentTrackCondition 'Tote
                 txtTrackCondition.Text = myTrackCondition
                 Me.PrepareTrackCondition(False)
             End If
@@ -336,9 +347,9 @@ Public Class frmMain
     '                                             col1, col2, col3, col4, col5, col6, _
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
 
-    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
+    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
 
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
 
     '    ''
@@ -370,7 +381,7 @@ Public Class frmMain
 
         Dim strDatatosend = PrepareDataThreeColorSign(strTemp, Color.Yellow, 24)
         strDatatosend = strDatatosend.Replace(" ", "")
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(strDatatosend))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(strDatatosend))
 
         Try
             If (strDatatosend <> "-1") Then
@@ -387,7 +398,7 @@ Public Class frmMain
                                                      EOT)
 
                 'convert it to char
-                MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+                MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
                 '
                 Me.myComPort.Output(MessageToSend)
 
@@ -456,7 +467,7 @@ Public Class frmMain
         Dim strDatatosend = PrepareDataThreeColorSignExotics(strTemp, Color.Yellow, 24)
         strDatatosend = strDatatosend.Replace(" ", "")
         'strDatatosend = "3132333435"
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(strDatatosend))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(strDatatosend))
 
         Try
             If (strDatatosend <> "-1") Then
@@ -475,7 +486,7 @@ Public Class frmMain
                                                      EOT)
 
                 'convert it to char
-                MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+                MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
                 '
                 Me.myComPort.Output(MessageToSend)
 
@@ -789,7 +800,7 @@ Public Class frmMain
             Dim strKey As String
             Key = intRace.ToString() + "_" + strType
             strKey = intRace.ToString() + "_" + strType
-            objRsExo = myCommSvr.oCommServer.ObjectRsExoAutototeV6(shrRace, strKey).Item(Key)
+            objRsExo = myCommSvr.oCommServerNet.ObjectRsExoAutototeV6(shrRace, strKey).Item(Key)
             intNumOfPrices = objRsExo.NumberOfPrices
             For shrExoCtr = 1 To intNumOfPrices
                 If (Char.IsUpper(objRsExo.Status(shrExoCtr), 0)) Then
@@ -1046,6 +1057,10 @@ Public Class frmMain
         'Me.ClearItems(21) 'trifecta out
         'Me.ClearItems(37) 'trifecta in
         ''
+
+        myCommSvr.CancelProcess()
+        Application.DoEvents()
+        myCommSvr = Nothing
         Me.myComPort = Nothing
         Me.KillComSvr()
         Me.KillDataSvr()
@@ -1786,7 +1801,7 @@ Public Class frmMain
     '                          , RaceText1, RaceText2, mtpText1, mtpText2, Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum1))
 
     '        'work it out
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        Me.myColMessages.Add(MessageToSend)
 
     '        ''clear outside board
@@ -1797,7 +1812,7 @@ Public Class frmMain
     '        '                  , Hex(28), strMsgCount, Me.CalcChecksumToAsciiHexString(ConstantDataToSend & strMsgCount), myInsideIntensity _
     '        '                  , RaceText1, RaceText2, mtpText1, mtpText2, Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum1))
     '        ''work it out
-    '        'MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        'MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        'Me.myColMessages.Add(MessageToSend)
 
     '        'complete string with odds 7-12
@@ -1814,7 +1829,7 @@ Public Class frmMain
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum2))
 
     '        'work it out
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myColMessages.Add(MessageToSend)
 
@@ -1827,7 +1842,7 @@ Public Class frmMain
     '                          , Hex(29), strMsgCount, Me.CalcChecksumToAsciiHexString(ConstantDataToSend & strMsgCount), myInsideIntensity _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum2))
     '        'work it out
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myColMessages.Add(MessageToSend)
 
@@ -1877,7 +1892,7 @@ Public Class frmMain
                                                  EOT)
 
             'work it out
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myColMessages.Add(MessageToSend)
 
             'complete string with odds 7-12
@@ -1897,7 +1912,7 @@ Public Class frmMain
                                                  EOT)
 
             'work it out
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myColMessages.Add(MessageToSend)
 
@@ -1938,26 +1953,26 @@ Public Class frmMain
 
     'Private Sub ClearMiniBoardWPS()
     '    'RO
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("01000100124040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("01000100124040404040404040040000"))
     '    'W
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010001001340404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010001001340404040404040404040404040040000"))
     '    'P
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("0100010014404040404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("0100010014404040404040404040404040404040040000"))
     '    'S
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("01000100154040404040404040404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("01000100154040404040404040404040404040404040404040040000"))
     'End Sub
 
     'Private Sub ClearMiniBoardRO()
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("01000100124040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("01000100124040404040404040040000"))
     'End Sub
 
     'Private Sub ClearMiniBoardOdds()
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("0100010010404040404040404040404040040000"))
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("01000100114040404040404040404040404040404040404040404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("0100010010404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("01000100114040404040404040404040404040404040404040404040404040404040404040040000"))
     'End Sub
 
     'Private Sub ClearMiniBoardTiming()
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010001001640404040404040404040404040404040404040404040404040040000"))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010001001640404040404040404040404040404040404040404040404040040000"))
     'End Sub
 
     'Private Sub ClearItems(ByVal intPort As Integer)
@@ -1980,7 +1995,7 @@ Public Class frmMain
     '                          , strPort, strMsgCount, Me.CalcChecksumToAsciiHexString(ConstantDataToSend & strMsgCount), myInsideIntensity _
     '                          , Me.CalcChecksumToAsciiHexString(strCheckSum))
     '    '
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    '
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -2013,7 +2028,7 @@ Public Class frmMain
                                                  SOH, strPort, BoardControl, BoardDimming, PayloadType,
                                                  BytesInPayload, EOT)
 
-        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
         '
         Me.myComPort.Output(MessageToSend)
         If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -2429,7 +2444,7 @@ Public Class frmMain
     '                          , OddsText4, OddsText4a, OddsText5, OddsText5a, OddsText6, OddsText6a _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum1))
     '        'work it out
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myColMessages.Add(MessageToSend)
 
@@ -2450,7 +2465,7 @@ Public Class frmMain
     '                              , OddsText4, OddsText4a, OddsText5, OddsText5a, OddsText6, OddsText6a _
     '                              , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum1))
     '            'work it out
-    '            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '            '
     '            Me.myColMessages.Add(MessageToSend)
     '        End If
@@ -2477,7 +2492,7 @@ Public Class frmMain
     '                          , OddsText10, OddsText10a, OddsText11, OddsText11a, OddsText12, OddsText12a _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum2))
     '        'work it out
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myColMessages.Add(MessageToSend)
 
@@ -2504,7 +2519,7 @@ Public Class frmMain
     '                              , OddsText10, OddsText10a, OddsText11, OddsText11a, OddsText12, OddsText12a _
     '                              , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum2))
     '            'work it out
-    '            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '            '
     '            Me.myColMessages.Add(MessageToSend)
     '        End If
@@ -2526,7 +2541,7 @@ Public Class frmMain
     '        '                  , OddsText15, OddsText15a, OddsText16, OddsText16a _
     '        '                  , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum3))
     '        ''work it out
-    '        'MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        'MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        ''
     '        'Me.myColMessages.Add(MessageToSend)
 
@@ -2548,7 +2563,7 @@ Public Class frmMain
     '        '                      , OddsText15, OddsText15a, OddsText16, OddsText16a _
     '        '                      , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum3))
     '        '    'work it out
-    '        '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '    '
     '        '    Me.myColMessages.Add(MessageToSend)
     '        '    '
@@ -2714,7 +2729,7 @@ Public Class frmMain
                                                  EOT)
 
             'work it out
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myColMessages.Add(MessageToSend)
 
@@ -2741,7 +2756,7 @@ Public Class frmMain
                                                  EOT)
 
             'work it out
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myColMessages.Add(MessageToSend)
 
@@ -2819,7 +2834,7 @@ Public Class frmMain
     '                                             TODTexta, TODTextb, TODTextc, TODTextd,
     '                                             PostTimea, PostTimeb, PostTimec, PostTimed, EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
     '    '
-    '    Me.myMiniColMessages.Add(Me.myCommSvr.oCommServer.GetMessageToSend(strToSend))
+    '    Me.myMiniColMessages.Add(Me.myCommSvr.oCommServerNet.GetMessageToSend(strToSend))
 
 
     '    '***************************************************************************************************************************
@@ -3050,7 +3065,7 @@ Public Class frmMain
     '                                             OddsText15, OddsText15a, OddsText16, OddsText16a,
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
     '    '
-    '    Me.myMiniColMessages.Add(Me.myCommSvr.oCommServer.GetMessageToSend(strToSend))
+    '    Me.myMiniColMessages.Add(Me.myCommSvr.oCommServerNet.GetMessageToSend(strToSend))
     '    ''
     'End Sub
 
@@ -3140,7 +3155,7 @@ Public Class frmMain
                                                  EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3231,7 +3246,7 @@ Public Class frmMain
     '                                             ro3, ro3a, ro4, ro4a,
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
     '    '
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
     '    'send it to WIN for official, dh,inq
     '    Me.PrepareMiniWPSDataToSend(True)
@@ -3278,7 +3293,7 @@ Public Class frmMain
     '                          , WIN2a, WIN2b, WIN2c, WIN2d, WIN2e, WIN2f _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    '
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3296,7 +3311,7 @@ Public Class frmMain
     '                              , WIN2a, WIN2b, WIN2c, WIN2d, WIN2e, WIN2f _
     '                              , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum))
     '        'convert it to char
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myComPort.Output(MessageToSend)
     '        If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3341,7 +3356,7 @@ Public Class frmMain
     '                          , PLACE3a, PLACE3b, PLACE3c, PLACE3d, PLACE3e _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    '
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3360,7 +3375,7 @@ Public Class frmMain
     '                              , PLACE3a, PLACE3b, PLACE3c, PLACE3d, PLACE3e _
     '                              , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum))
     '        'convert it to char
-    '        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '        '
     '        Me.myComPort.Output(MessageToSend)
     '        If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3408,7 +3423,7 @@ Public Class frmMain
     '                          , SHOW3a, SHOW3b, SHOW3c, SHOW3d, SHOW3e _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
 
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3434,7 +3449,7 @@ Public Class frmMain
     '                                 , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
 
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    '******************************************************************
     '    Me.myComPort.Output(MessageToSend)
 
@@ -3455,7 +3470,7 @@ Public Class frmMain
     '    '                      , SHOW3a, SHOW3b, SHOW3c, SHOW3d, SHOW3e _
     '    '                      , Me.CalcChecksumToAsciiHexString(Me.myInsideIntensity & strCheckSum))
     '    ''convert it to char
-    '    'MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    'MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    'Me.myComPort.Output(MessageToSend)
 
 
@@ -3556,7 +3571,7 @@ Public Class frmMain
                                                  EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3573,7 +3588,7 @@ Public Class frmMain
                                                  EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3589,7 +3604,7 @@ Public Class frmMain
                                                  SHOW3a, SHOW3b, SHOW3c, SHOW3d, SHOW3e,
                                                  EOT)
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myComPort.Output(MessageToSend)
 
@@ -3607,7 +3622,7 @@ Public Class frmMain
                                                  EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             '
             Me.myComPort.Output(MessageToSend)
 
@@ -3662,7 +3677,7 @@ Public Class frmMain
             '                                     EOT)
 
             ''convert it to char
-            'MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            'MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
 
             'Me.myComPort.Output(MessageToSend)
 
@@ -3682,7 +3697,7 @@ Public Class frmMain
 
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
 
             Me.myComPort.Output(MessageToSend)
 
@@ -3737,7 +3752,7 @@ Public Class frmMain
     '                          , S34a, S34b, S34c, S34d, S34e _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
 
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3770,7 +3785,7 @@ Public Class frmMain
     '                          , S14a, S14b, S14c, S14d, S14e _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
 
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3842,7 +3857,7 @@ Public Class frmMain
                                                  EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
 
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3856,7 +3871,7 @@ Public Class frmMain
                                                  S14a, S14b, S14c, S14d, S14e,
                                                  EOT)
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
 
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
@@ -3898,7 +3913,7 @@ Public Class frmMain
     '                          , PoolTotE, PoolTotF, Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
 
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
 
     '    Me.myComPort.Output(MessageToSend)
 
@@ -3937,7 +3952,7 @@ Public Class frmMain
     '                          , txtPool3A, txtPool3B, txtPool3C, txtPool3D, txtPool3E _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
     '    'convert it to char
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -3974,7 +3989,7 @@ Public Class frmMain
     '                          , txtPool5A, txtPool5B, txtPool5C, txtPool5D, txtPool5E _
     '                          , txtPool6A, txtPool6B, txtPool6C, txtPool6D, txtPool6E _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4011,7 +4026,7 @@ Public Class frmMain
     '                          , txtPool8A, txtPool8B, txtPool8C, txtPool8D, txtPool8E _
     '                          , txtPool9A, txtPool9B, txtPool9C, txtPool9D, txtPool9E _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4048,7 +4063,7 @@ Public Class frmMain
     '                          , txtPool11A, txtPool11B, txtPool11C, txtPool11D, txtPool11E _
     '                          , txtPool12A, txtPool12B, txtPool12C, txtPool12D, txtPool12E _
     '                          , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
-    '    MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+    '    MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
     '    Me.myComPort.Output(MessageToSend)
     '    If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4164,7 +4179,7 @@ Public Class frmMain
                                                      EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
 
             Me.myComPort.Output(MessageToSend)
 
@@ -4180,7 +4195,7 @@ Public Class frmMain
                                                      txtPool3A, txtPool3B, txtPool3C, txtPool3D, txtPool3E, EOT)
 
             'convert it to char
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4193,7 +4208,7 @@ Public Class frmMain
                                                      txtPool5A, txtPool5B, txtPool5C, txtPool5D, txtPool5E,
                                                      txtPool6A, txtPool6B, txtPool6C, txtPool6D, txtPool6E, EOT)
 
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4206,7 +4221,7 @@ Public Class frmMain
                                                      txtPool8A, txtPool8B, txtPool8C, txtPool8D, txtPool8E,
                                                      txtPool9A, txtPool9B, txtPool9C, txtPool9D, txtPool9E, EOT)
 
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4219,7 +4234,7 @@ Public Class frmMain
                                                      txtPool11A, txtPool11B, txtPool11C, txtPool11D, txtPool11E,
                                                      txtPool12A, txtPool12B, txtPool12C, txtPool12D, txtPool12E, EOT)
 
-            MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+            MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
             Me.myComPort.Output(MessageToSend)
             If Not Me.myComPort.ErrorMessage = "" Then Me.ShowError()
 
@@ -4295,9 +4310,9 @@ Public Class frmMain
     '                                             col1, col2, col3, col4, col5, _
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
 
-    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
+    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
 
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
 
     '    ''
@@ -4330,7 +4345,7 @@ Public Class frmMain
         Dim strDatatosend = PrepareDataThreeColorSign(strTemp, Color.Yellow, 24)
         strDatatosend = strDatatosend.Replace(" ", "")
         'strDatatosend = "3132333435"
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(strDatatosend))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(strDatatosend))
 
         Try
             If (strDatatosend <> "-1") Then
@@ -4349,7 +4364,7 @@ Public Class frmMain
                                                      EOT)
 
                 'convert it to char
-                MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+                MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
                 '
                 Me.myComPort.Output(MessageToSend)
 
@@ -4691,7 +4706,7 @@ Public Class frmMain
     '                                             WIN2a, WIN2b, WIN2c, WIN2d, WIN2e, WIN2f,
     '                                             general, EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
     '    '
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
     '    '
     '    'If sendWinDataOnly Then Return
@@ -4725,7 +4740,7 @@ Public Class frmMain
     '                                             PLACE2a, PLACE2b, PLACE2c, PLACE2d, PLACE2e,
     '                                             PLACE3a, PLACE3b, PLACE3c, PLACE3d, PLACE3e,
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
 
     '    'SHOW
@@ -4763,7 +4778,7 @@ Public Class frmMain
     '                                             SHOW4a, SHOW4b, SHOW4c, SHOW4d, SHOW4e,
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
 
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
     '    ''
     'End Sub
@@ -4868,7 +4883,7 @@ Public Class frmMain
     '                                             S14a, S14b, S14c, S14d, S14e,
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
     '    '
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
     '    ''
     'End Sub
@@ -4914,7 +4929,7 @@ Public Class frmMain
                               , PerfectaAmta, PerfectaAmtb, PerfectaAmtc, PerfectaAmtd, PerfectaAmte, PerfectaAmtf, PerfectaAmtg _
                               , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
         'convert it to char
-        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
         'turn on exacta
         'Me.rbExacta.Checked = True
         Me.myComPort.Output(MessageToSend)
@@ -4966,7 +4981,7 @@ Public Class frmMain
                               , TrifectaAmta, TrifectaAmtb, TrifectaAmtc, TrifectaAmtd, TrifectaAmte, TrifectaAmtf, TrifectaAmtg _
                               , Me.CalcChecksumToAsciiHexString(Me.myOutsideIntensity & strCheckSum))
         'convert it to char
-        MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+        MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
         'turn on trifecta
         'Me.rbTrifecta.Checked = True
         Me.myComPort.Output(MessageToSend)
@@ -5100,7 +5115,7 @@ Public Class frmMain
             '
         End If
         If (rbTote.Checked) Then
-            myTrackCondition = Me.myCommSvr.p_strToteTrackCondition 'Me.myCommSvr.oCommServer.CurrentTrackCondition
+            myTrackCondition = Me.myCommSvr.p_strToteTrackCondition 'Me.myCommSvr.oCommServerNet.CurrentTrackCondition
             txtTrackCondition.Text = myTrackCondition
             Me.PrepareTrackCondition(False)
         End If
@@ -5115,9 +5130,9 @@ Public Class frmMain
             '
         End If
         Dim strStatus As String
-        strStatus = Me.myCommSvr.oCommServer.CurrentStatus()
+        strStatus = Me.myCommSvr.oCommServerNet.CurrentStatus()
         Dim strRunnersFlashingStatus As String
-        strRunnersFlashingStatus = Me.myCommSvr.oCommServer.CurrentRunnersFlashingStatus()
+        strRunnersFlashingStatus = Me.myCommSvr.oCommServerNet.CurrentRunnersFlashingStatus()
 
         Try
             p_blnUpdateManually = False
@@ -6627,7 +6642,7 @@ Public Class frmMain
                                                      EOT)
 
                 'convert it to char
-                MessageToSend = Me.myCommSvr.oCommServer.GetMessageToSend(myDataToSend)
+                MessageToSend = Me.myCommSvr.oCommServerNet.GetMessageToSend(myDataToSend)
                 '
                 Me.myComPort.Output(MessageToSend)
 
@@ -6769,9 +6784,9 @@ Public Class frmMain
     '                                             col13, col14, col15, _
     '                                             EOT, Me.CalculateCRC(1), Me.CalculateCRC(2))
 
-    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
+    '    'Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
 
-    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(MessageToSend))
+    '    Me.myMiniComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(MessageToSend))
     '    If Not Me.myMiniComPort.ErrorMessage = "" Then Me.ShowError(True)
 
     '    ''
@@ -6819,26 +6834,26 @@ Public Class frmMain
 
         'OUTPUT DATA
         'Me.myComPort.Output(Me.myMiniColMessages(i))
-        ''Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("01008000120120002600240121040000"))
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010701090000000030370035040000"))
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010701090001000030370035040000"))
-        'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010701090000000000000000040000"))
+        ''Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("01008000120120002600240121040000"))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010701090000000030370035040000"))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010701090001000030370035040000"))
+        'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010701090000000000000000040000"))
 
         Try
 
 
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("A56832FF7B00060000000900000100012502AE"))
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("A568320174111D77B9036414231457454C434F4D4532AE"))
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("A568320174111D77B9036414231457454C434F4D4532AE"))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("A56832FF7B00060000000900000100012502AE"))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("A568320174111D77B9036414231457454C434F4D4532AE"))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("A568320174111D77B9036414231457454C434F4D4532AE"))
 
             'Me.myComPort.Output("¥h2twÝ ¬@hello ¬®")
             'Me.myComPort.Output("A56832FF7B00060000000900000100012502AE")
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("a56832017411000000001b007700dd0300000000008000401200000000000003000568656c6c6f8005ae"))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("a56832017411000000001b007700dd0300000000008000401200000000000003000568656c6c6f8005ae"))
 
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("a56832017411000000001b007700fb0300000000008000403000000000000003000548454c4c4f1c05ae"))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("a56832017411000000001b007700fb0300000000008000403000000000000003000548454c4c4f1c05ae"))
             'PrepareWPSPoolHeaderToSend(True)
             Dim stringtosend As String = Me.PrepareDataThreeColorSign("WIN", Color.Yellow, 24)
-            Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(stringtosend.Replace(" ", "")))
+            Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(stringtosend.Replace(" ", "")))
 
             '"a5 68 32 01 74 11 00 00 00 00 27 00 77 00 ee 03 00 00 00 00 00 80 00 40 17 00 00 00 00 00 00 03 00 11 6c 61 20 63 61 73 61 20 65 73 20 62 6f 6e 69 74 61 b4 09 ae"
             'Dim a As String = "a5 68 32 01 74 11 00 00 00 00 1b 00 77 00 db 03 00 00 00 00 00 80 00 40 10 00 00 00 00 00 00 03 00 05 68 65 6c 6c 6f 7c 05 ae"
@@ -6849,18 +6864,18 @@ Public Class frmMain
             'a = a.Replace(" ", "")
             'a = "a5 68 32 01 74 11 00 00 00 00 1b 00 77 00 db 03 00 00 00 00 00 80 00 40 10 00 00 00 00 00 00 03 00 05 68 65 6c 6c 6f 7c 05 ae"
             'a = "a5 68 32 01 74 11 00 00 00 00 1b 00 77 00 93 03 00 00 00 00 00 64 00 14 10 00 00 00 00 00 00 03 00 05 68 65 6c 6c 6f ec 04 ae"
-            'Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend(a.Replace(" ", "")))
+            'Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend(a.Replace(" ", "")))
         Catch ex As Exception
 
         End Try
-        Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010001150000000A37353735373537353735273537353735040000"))
+        Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010001150000000A37353735373537353735273537353735040000"))
 
 
 
 
-        Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010001150000000A37353735373537353735273537353735040000"))
-        Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("011A010001150000000040404040404040404040404040404040040000"))
-        Me.myComPort.Output(Me.myCommSvr.oCommServer.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
+        Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010001150000000A37353735373537353735273537353735040000"))
+        Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("011A010001150000000040404040404040404040404040404040040000"))
+        Me.myComPort.Output(Me.myCommSvr.oCommServerNet.GetMessageToSend("010080001700001E008080FE8080008080FE8080008080FE8080008080FE8080008080FE8080040000"))
 
 
     End Sub

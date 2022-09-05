@@ -1,4 +1,6 @@
-﻿Imports System.Runtime.InteropServices
+﻿Option Explicit On
+
+Imports System.Runtime.InteropServices
 Imports RSIData
 
 'purpose of this class is to allow the user to update the information on the text
@@ -87,7 +89,10 @@ Public Class CommSvr
 
 #Region " Declarations "
 
-    Public WithEvents oCommServer As RSIPort.clsCommSvr
+    Public WithEvents oCommServerNet As RSIPortNet.clsCommSvr
+
+    'Public WithEvents oCommServer As RSIPort.clsCommSvr
+
     Public tmrWPS As Timer
     Private myDataset As RaceDisplayDataset
     Private myCurrentMessage As String
@@ -165,9 +170,12 @@ Public Class CommSvr
                 intCurrPage(i) = 1
             Next
             Me.myDataset = New RaceDisplayDataset
-            oCommServer = New RSIPort.clsCommSvr()
-            '
-            If oCommServer Is Nothing Then Return
+
+            oCommServerNet = New RSIPortNet.clsCommSvr()
+            If oCommServerNet Is Nothing Then Return
+
+            'oCommServer = New RSIPort.clsCommSvr()
+            'If oCommServer Is Nothing Then Return
             '
             'AddHandler oCommServer.Message, AddressOf oCommServer_Message
             'AddHandler oCommServer.TimerMsg, AddressOf oCommServer_TimerMsg
@@ -175,8 +183,7 @@ Public Class CommSvr
             'AddHandler oCommServer.RaceChange, AddressOf oCommServer_RaceChange
             'AddHandler oCommServer.NewRO, AddressOf oCommServer_NewRO
         Catch ex As Exception
-            Throw New Exception("Error creating CommSvr class" & vbCrLf &
-            ex.Message)
+            Throw New Exception("Error creating CommSvr class" & vbCrLf & ex.Message)
 
         End Try
         ''
@@ -188,17 +195,31 @@ Public Class CommSvr
 
     Protected Overrides Sub Finalize()
         Try
-            Do While Marshal.ReleaseComObject(oCommServer) > 0
-            Loop
-            oCommServer.CloseAll()
-            oCommServer = Nothing
+            'Do While Marshal.ReleaseComObject(oCommServer) > 0
+            'Loop
+            'oCommServer.CloseAll()
+            'oCommServer = Nothing
+
+            'Do While Marshal.ReleaseComObject(oCommServerNet) > 0
+            'Loop
+
+            oCommServerNet.CloseAll()
+            oCommServerNet = Nothing
+
         Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine("Error finalizing CommSvr " + ex.ToString())
             'nothing
         End Try
     End Sub
 
 
 #End Region
+
+    Public Sub CancelProcess()
+        If Not oCommServerNet Is Nothing Then
+            oCommServerNet.CancelProcess = True
+        End If
+    End Sub
 
 #Region " Events raised by comm server "
 
@@ -208,7 +229,7 @@ Public Class CommSvr
     '    RaiseEvent CommEventMsg(strMessage)
     'End Sub
 
-    Private Sub oCommServer_Message(ByRef strMessage As String) Handles oCommServer.Message
+    Private Sub oCommServerNet_Message(ByRef strMessage As String) Handles oCommServerNet.Message
         Try
             Me.myCurrentMessage = strMessage
             If IsJudgeMessage(strMessage) Then
@@ -219,6 +240,18 @@ Public Class CommSvr
             'nothing
         End Try
     End Sub
+
+    'Private Sub oCommServer_Message(ByRef strMessage As String) Handles oCommServer.Message
+    '    Try
+    '        Me.myCurrentMessage = strMessage
+    '        If IsJudgeMessage(strMessage) Then
+    '            ProcessJudgesMessage(strMessage)
+    '        End If
+    '        'RaiseEvent DisplayMessages()
+    '    Catch
+    '        'nothing
+    '    End Try
+    'End Sub
 
     Private Sub ProcessJudgesMessage(message As String)
         Dim data As JMData = ProcessJM(message)
@@ -324,7 +357,50 @@ ErrHndlr:
     End Function
 
 
-    Private Sub oCommServer_RaceHeaderChange(ByRef CurrentMTP As String, ByRef CurrentTime As String, ByRef CurrentPostTime As String, ByRef CurrentRace As Short) Handles oCommServer.RaceHeaderChange
+    'Private Sub oCommServer_RaceHeaderChange(ByRef CurrentMTP As String, ByRef CurrentTime As String, ByRef CurrentPostTime As String, ByRef CurrentRace As Short) Handles oCommServer.RaceHeaderChange
+    '    Dim Race As Integer = Convert.ToInt32(CurrentRace)
+    '    Dim strMtp As String = ""
+    '    'Ignore strMtp --> They are behind
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        p_intCurrentRace = Race
+    '        Me.UpdateRace(Race)
+    '        'set mtp
+    '        If ((IsDate(CurrentTime)) And (IsDate(CurrentPostTime))) Then
+    '            Dim startTime As DateTime = DateTime.Parse(CurrentTime)
+    '            Dim endTime As DateTime = DateTime.Parse(CurrentPostTime)
+    '            Dim varTime As TimeSpan
+
+    '            varTime = endTime.Subtract(startTime)
+
+    '            Dim fractionalMinutes As Double = varTime.TotalMinutes
+    '            Dim wholeMinutes As Integer = CInt(fractionalMinutes)
+
+    '            strMtp = wholeMinutes.ToString()
+
+    '            If (wholeMinutes < 0) Then
+    '                strMtp = 0
+    '            End If
+    '        Else
+    '            strMtp = "   "
+    '        End If
+    '        p_strCurrentMTP = strMtp
+    '        Me.UpdateMTP(CurrentPostTime, strMtp, Race)
+
+    '        'p_strCurrentMTP = CurrentMTP
+    '        'Me.UpdateMTP(CurrentPostTime, CurrentMTP, Race)
+    '        'time of day tod
+    '        Me.UpdateTOD(CurrentTime, Race)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_RaceHeaderChange(ByRef CurrentMTP As String, ByRef CurrentTime As String, ByRef CurrentPostTime As String, ByRef CurrentRace As Short) Handles oCommServerNet.RaceHeaderChange
         Dim Race As Integer = Convert.ToInt32(CurrentRace)
         Dim strMtp As String = ""
         'Ignore strMtp --> They are behind
@@ -367,7 +443,20 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_TrackConditionChange(ByRef CurrentTrackCondition As String, ByRef intRace As Short) Handles oCommServer.TrackConditionChange
+    'Private Sub oCommServer_TrackConditionChange(ByRef CurrentTrackCondition As String, ByRef intRace As Short) Handles oCommServer.TrackConditionChange
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        Me.UpdateTrackCondition(CurrentTrackCondition)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_TrackConditionChange(ByRef CurrentTrackCondition As String, ByRef intRace As Short) Handles oCommServerNet.TrackConditionChange
         Try
             If m_ApplicationBussy Then
                 Application.DoEvents()
@@ -385,7 +474,22 @@ ErrHndlr:
     '    Me.UpdateRaceStatus()
     'End Sub
 
-    Private Sub oCommServer_NewOdds(ByRef m_objOdds As clsOdds, ByRef intRace As Short) Handles oCommServer.NewOdds
+    'Private Sub oCommServer_NewOdds(ByRef m_objOdds As clsOdds, ByRef intRace As Short) Handles oCommServer.NewOdds
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        'always update odds
+    '        Me.UpdateOdds(m_objOdds, Race)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewOdds(ByRef m_objOdds As clsOdds, ByRef intRace As Short) Handles oCommServerNet.NewOdds
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
             If m_ApplicationBussy Then
@@ -400,7 +504,31 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewRO(ByRef m_objRunningOrder As clsRunningOrder, ByRef intRace As Short) Handles oCommServer.NewRO
+    'Private Sub oCommServer_NewRO(ByRef m_objRunningOrder As clsRunningOrder, ByRef intRace As Short) Handles oCommServer.NewRO
+    '    'Private Sub oCommServer_NewRO(ByRef m_objRunningOrder As clsRunningOrder, ByRef strToteCompany as string, ByRef intRace As Short) Handles oCommServer.NewRO
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        Dim strToteCompany As String = ""
+    '        If (strToteCompany.ToUpper() = "AMTOTE") Then
+    '            Me.UpdateRunningOrderAmtote(m_objRunningOrder, Race)
+    '        Else
+    '            'If (Not p_blnResultsOut) Then
+    '            '    If (Val(p_strCurrentMTP) <= 0) Then
+    '            Me.UpdateRunningOrder(m_objRunningOrder, Race)
+    '            '    End If
+    '            'End If
+    '        End If
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServer_NewRO(ByRef m_objRunningOrder As clsRunningOrder, ByRef intRace As Short) Handles oCommServerNet.NewRO
         'Private Sub oCommServer_NewRO(ByRef m_objRunningOrder As clsRunningOrder, ByRef strToteCompany as string, ByRef intRace As Short) Handles oCommServer.NewRO
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
@@ -424,7 +552,27 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewOfficialStatus(ByRef blnOfficialStatus As Boolean, ByRef blnObjStatus As Boolean, ByRef blnInqStatus As Boolean, ByRef blnPhotoStatus As Boolean, ByRef blnDHStatus As Boolean, ByRef intRace As Short) Handles oCommServer.NewOfficialStatus
+    'Private Sub oCommServer_NewOfficialStatus(ByRef blnOfficialStatus As Boolean, ByRef blnObjStatus As Boolean, ByRef blnInqStatus As Boolean, ByRef blnPhotoStatus As Boolean, ByRef blnDHStatus As Boolean, ByRef intRace As Short) Handles oCommServer.NewOfficialStatus
+
+    '    If p_blnSkipNewOfficialStatusEvent Then
+    '        Exit Sub
+    '    End If
+
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        Me.UpdateStatusJM(blnOfficialStatus, blnObjStatus, blnInqStatus, blnPhotoStatus, blnDHStatus, Race)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Public Event NewOfficialStatus(ByRef m_udtJudgesInfo As RSIData.typJudgesInfo, ByRef CurrentOfficialStatus As String, ByRef intRace As Short)
+    Private Sub oCommServerNet_NewOfficialStatus(ByRef judgesInfo As RSIData.typJudgesInfo, ByRef CurrentOfficialStatus As String, ByRef intRace As Short) Handles oCommServerNet.NewOfficialStatus
 
         If p_blnSkipNewOfficialStatusEvent Then
             Exit Sub
@@ -436,14 +584,28 @@ ErrHndlr:
                 Application.DoEvents()
             End If
             m_ApplicationBussy = True
-            Me.UpdateStatusJM(blnOfficialStatus, blnObjStatus, blnInqStatus, blnPhotoStatus, blnDHStatus, Race)
+            Me.UpdateStatusJM(judgesInfo.blnOfficialStatus, judgesInfo.blnObjStatus, judgesInfo.blnInqStatus, judgesInfo.blnPhotoStatus, judgesInfo.blnDHStatus, Race)
             m_ApplicationBussy = False
         Catch
             m_ApplicationBussy = False
         End Try
     End Sub
 
-    Private Sub oCommServer_NewTT(ByRef m_objTeleTimer As clsTeleTimer, ByRef intRace As Short) Handles oCommServer.NewTT
+    'Private Sub oCommServer_NewTT(ByRef m_objTeleTimer As clsTeleTimer, ByRef intRace As Short) Handles oCommServer.NewTT
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        Me.UpdateTeletimer(m_objTeleTimer, Race)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewTT(ByRef m_objTeleTimer As clsTeleTimer, ByRef intRace As Short) Handles oCommServerNet.NewTT
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
             If m_ApplicationBussy Then
@@ -457,7 +619,27 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewResults(ByRef m_objFinisherData As clsFinisherData, ByRef intRace As Short) Handles oCommServer.NewResults
+    'Private Sub oCommServer_NewResults(ByRef m_objFinisherData As clsFinisherData, ByRef intRace As Short) Handles oCommServer.NewResults
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        If m_ApplicationBussy Then
+    '            Application.DoEvents()
+    '        End If
+    '        m_ApplicationBussy = True
+    '        p_intRaceResultsOut = Race
+    '        p_blnResultsOut = True
+    '        p_intClearResults = 1
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            objResultFN(Race) = m_objFinisherData
+    '        End If
+    '        Me.UpdateOfficialResults(m_objFinisherData, intRace)
+    '        m_ApplicationBussy = False
+    '    Catch
+    '        m_ApplicationBussy = False
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewResults(ByRef m_objFinisherData As clsFinisherData, ByRef intRace As Short) Handles oCommServerNet.NewResults
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
             If m_ApplicationBussy Then
@@ -477,7 +659,27 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewResultsWIN(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsWIN
+    'Private Sub oCommServer_NewResultsWIN(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsWIN
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Dim blnFlag As Boolean
+    '    Try
+    '        'blnFlag = frmMain.timerOfficial.Enabled
+    '        'frmMain.timerOfficial.Enabled = False
+    '        If (p_blnTmrResultsBusy) Then
+    '            Application.DoEvents()
+    '        End If
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            If (Char.IsUpper(m_objResultWPS.Status, 0)) Then
+    '                objResultWin(Race) = m_objResultWPS
+    '            End If
+    '        End If
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    Catch ex As Exception
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewResultsWIN(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServerNet.NewResultsWIN
         Dim Race As Integer = Convert.ToInt32(intRace)
         Dim blnFlag As Boolean
         Try
@@ -497,7 +699,27 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewResultsPLC(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsPLC
+    'Private Sub oCommServer_NewResultsPLC(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsPLC
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Dim blnFlag As Boolean
+    '    Try
+    '        'blnFlag = frmMain.timerOfficial.Enabled
+    '        'frmMain.timerOfficial.Enabled = False
+    '        If (p_blnTmrResultsBusy) Then
+    '            Application.DoEvents()
+    '        End If
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            If (Char.IsUpper(m_objResultWPS.Status, 0)) Then
+    '                objResultPlc(Race) = m_objResultWPS
+    '            End If
+    '        End If
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    Catch ex As Exception
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewResultsPLC(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServerNet.NewResultsPLC
         Dim Race As Integer = Convert.ToInt32(intRace)
         Dim blnFlag As Boolean
         Try
@@ -517,7 +739,27 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewResultsSHW(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsSHW
+    'Private Sub oCommServer_NewResultsSHW(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServer.NewResultsSHW
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Dim blnFlag As Boolean
+    '    Try
+    '        'blnFlag = frmMain.timerOfficial.Enabled
+    '        'frmMain.timerOfficial.Enabled = False
+    '        If (p_blnTmrResultsBusy) Then
+    '            Application.DoEvents()
+    '        End If
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            If (Char.IsUpper(m_objResultWPS.Status, 0)) Then
+    '                objResultShow(Race) = m_objResultWPS
+    '            End If
+    '        End If
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    Catch ex As Exception
+    '        'frmMain.timerOfficial.Enabled = blnFlag
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewResultsSHW(ByRef m_objResultWPS As clsResultWPS, ByRef intRace As Short) Handles oCommServerNet.NewResultsSHW
         Dim Race As Integer = Convert.ToInt32(intRace)
         Dim blnFlag As Boolean
         Try
@@ -550,7 +792,22 @@ ErrHndlr:
     '    End If
     'End Sub
 
-    Private Sub oCommServer_NewWINPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewWINPool
+    'Private Sub oCommServer_NewWINPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewWINPool
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+    '    Try
+    '        p_blnWINPool = False
+    '        Application.DoEvents()
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            m_objWINPool(Race) = m_objRunnerTotals
+    '        End If
+    '        p_blnWINPool = True
+    '        '
+    '    Catch ex As Exception
+    '        p_blnWINPool = True
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewWINPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServerNet.NewWINPool
         Dim Race As Integer = Convert.ToInt32(intRace)
         Try
             p_blnWINPool = False
@@ -565,7 +822,23 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewPlacePool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewPlacePool
+    'Private Sub oCommServer_NewPlacePool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewPlacePool
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+
+    '    Try
+    '        p_blnPlacePool = False
+    '        Application.DoEvents()
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            m_objPlacePool(Race) = m_objRunnerTotals
+    '        End If
+    '        p_blnPlacePool = True
+    '        '
+    '    Catch ex As Exception
+    '        p_blnPlacePool = True
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewPlacePool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServerNet.NewPlacePool
         Dim Race As Integer = Convert.ToInt32(intRace)
 
         Try
@@ -581,7 +854,23 @@ ErrHndlr:
         End Try
     End Sub
 
-    Private Sub oCommServer_NewShowPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewShowPool
+    'Private Sub oCommServer_NewShowPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServer.NewShowPool
+    '    Dim Race As Integer = Convert.ToInt32(intRace)
+
+    '    Try
+    '        p_blnShowPool = False
+    '        Application.DoEvents()
+    '        If ((Race > 0) And (Race <= p_intMaxNumbOfRaces)) Then
+    '            m_objShowPool(Race) = m_objRunnerTotals
+    '        End If
+    '        p_blnShowPool = True
+    '        '
+    '    Catch ex As Exception
+    '        p_blnShowPool = True
+    '    End Try
+    'End Sub
+
+    Private Sub oCommServerNet_NewShowPool(ByRef m_objRunnerTotals As clsRunnerTotals, ByRef intRace As Short) Handles oCommServerNet.NewShowPool
         Dim Race As Integer = Convert.ToInt32(intRace)
 
         Try
@@ -1478,7 +1767,8 @@ ErrHndlr:
             Dim shtTmp As Short = ObjExotics.NumberOfPrices
             Select Case myExoticType
                 Case ExoticType.DD
-                    ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2DD ").Item(intRace & "_" & "2DD ")
+                    'ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2DD ").Item(intRace & "_" & "2DD ")
+                    ObjExotics = Me.oCommServerNet.ObjectRsExo(intRace, intRace & "_" & "2DD ").Item(intRace & "_" & "2DD ")
                     If ObjExotics Is Nothing Then Return
                     '
                     Dim dr As RaceDisplayDataset.DAILYDOUBLERow
@@ -1491,7 +1781,8 @@ ErrHndlr:
                     drExotic = dr
                     '
                 Case ExoticType.Perfecta
-                    ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2EX ").Item(intRace & "_" & "2EX ")
+                    'ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2EX ").Item(intRace & "_" & "2EX ")
+                    ObjExotics = Me.oCommServerNet.ObjectRsExo(intRace, intRace & "_" & "2EX ").Item(intRace & "_" & "2EX ")
                     If ObjExotics Is Nothing Then Return
                     '
                     myNumberExacta = ObjExotics.NumberOfPrices
@@ -1506,7 +1797,8 @@ ErrHndlr:
                     intAmountDigits = 8
                     '
                 Case ExoticType.BET3
-                    ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2P03").Item(intRace & "_" & "2P03")
+                    'ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2P03").Item(intRace & "_" & "2P03")
+                    ObjExotics = Me.oCommServerNet.ObjectRsExo(intRace, intRace & "_" & "2P03").Item(intRace & "_" & "2P03")
                     If ObjExotics Is Nothing Then Return
                     '
                     Dim dr As RaceDisplayDataset.BET3Row
@@ -1520,7 +1812,8 @@ ErrHndlr:
                     intAmountDigits = 8 'new code, pick 3 and trifecta now have 8 places
                     '
                 Case ExoticType.Trifecta
-                    ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2TRI").Item(intRace & "_" & "2TRI")
+                    'ObjExotics = Me.oCommServer.ObjectRsExo(intRace, intRace & "_" & "2TRI").Item(intRace & "_" & "2TRI")
+                    ObjExotics = Me.oCommServerNet.ObjectRsExo(intRace, intRace & "_" & "2TRI").Item(intRace & "_" & "2TRI")
                     If ObjExotics Is Nothing Then Return
                     '
                     myNumberTrifecta = ObjExotics.NumberOfPrices
@@ -1886,7 +2179,8 @@ ErrHndlr:
         '
         Try
             Dim ObjWinner As New RSIData.clsFinisherData
-            ObjWinner = Me.oCommServer.ObjectFinisher(intRace).Item("F" & intRace)
+            'ObjWinner = Me.oCommServer.ObjectFinisher(intRace).Item("F" & intRace)
+            ObjWinner = Me.oCommServerNet.ObjectFinisher(intRace).Item("F" & intRace)
             If ObjWinner Is Nothing Then Return ""
             'we have a winner for the race
             Return Me.FixString(ObjWinner.Runner(1, 1).ToString)
